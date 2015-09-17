@@ -24,7 +24,11 @@ Furthermore, can I meet the above objectives in a maze that consists of:
 
 ### Hardware
 
-For this project, I selected the [GoPiGo](http://www.dexterindustries.com/gopigo/) robot kit from [Dexter Industries](http://www.dexterindustries.com/).  The GoPiGo is a simple, 2-wheeled vehicle with a forward-facing, servo-mounted ultrasonic range sensor, controlled by a Raspberry Pi.  I selected it for the following qualities:
+For this project, I selected the [GoPiGo](http://www.dexterindustries.com/gopigo/) robot kit from [Dexter Industries](http://www.dexterindustries.com/).  The GoPiGo is a simple, 2-wheeled vehicle with a forward-facing, servo-mounted ultrasonic range sensor, controlled by a Raspberry Pi.
+
+![](gopigo.jpg)
+
+I selected it for the following qualities:
 
  1. Programmable in Python.
  1. Complete kit - no need to identify and purchase compatible components.
