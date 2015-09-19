@@ -37,7 +37,7 @@ I selected it for the following qualities:
 
 ### Software
 
-Discussion to follow...
+Discusssion to follow...
 
 ### License
 
