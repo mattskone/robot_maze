@@ -2,6 +2,8 @@
 
 import time
 
+from matrix import matrix
+
 
 class BaseState(object):
 
@@ -48,10 +50,30 @@ class CorridorState(BaseState):
 		# Detect the distance and direction (L/R) to the nearest wall:
 		closest_side, dist, width = self._sense_initial_position()
 
-		# Initialize the probability distribution, given as:
+		# Initialize the robot's position/velocity state "x", expressed as:
 		# [0] distance in cm from the nearest side
 		# [1] lateral velocity (toward or away from the side) in cm/sec
-		current = [dist, 0]
+		x = matrix([[dist], [0.]])
+
+		# Initial uncertainty:
+		# TODO: add measurement uncertainty at [0][0]
+		P = matrix([[0., 0.], [0., 0.]])
+
+		# external motion (none modeled)
+		u = matrix([[0.], [0.]])
+
+		# Next state function:
+		# [0][1] = 1 -> apply full velocity to position
+		F = matrix([[1., 1.], [0, 1.]])
+
+		# Measurement function (extracts the position element from x)
+		H = matrix([[1., 0.]])
+
+		# Measurement uncertainty (none modeled)
+		R = matrix([[1.]])
+
+		# Identity matrix (matrix equivalent of 1)
+		I = matrix([[1., 0.], [0., 1.]])
 
 		while True:
 
@@ -60,14 +82,14 @@ class CorridorState(BaseState):
 
 			# 2. Move
 			# Start the robot, if not already moving
-			# robot.start_moving()
+			self.robot.driver.fwd()
 
 			# Pause for delay period:
-			# time.sleep(MOVE_TIME)
+			time.sleep(MOVE_DURATION)
 
 			# Apply motion update prediction to state vector
-	        # x = (F * x) + u
-	        # P = F * P * F.transpose()
+	        x = (F * x) + u
+	        P = F * P * F.transpose()
 
 	        # 3. Sense
 	        # Take a sensor measurement
@@ -75,9 +97,10 @@ class CorridorState(BaseState):
 
 	        # Have we reached a new state?
 	        # If so, stop the robot and break
-	        # if False:  # detect new state here
-		       #  robot.stop()
-		       #  break
+	        if False:  # detect new state here
+		        robot.driver.stop()
+		        # TODO: change robot's state attribute
+		        # break
 
 	        # Apply measurement update to state vector
 	        # Z = matrix([measurements[n]])

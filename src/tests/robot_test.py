@@ -5,14 +5,15 @@ import unittest
 from mock import MagicMock
 
 import robot
-from robot import Robot
 
 
 class RobotTests(unittest.TestCase):
 	"""Unit tests for the Robot class."""
 
 	def setUp(self):
-		self.r = Robot(driver_module='gopigo_stub')
+		robot.mount = MagicMock()
+		robot.sensor = MagicMock()
+		self.r = robot.Robot(driver_module='tests.gopigo_stub')
 
 	def test_init(self):
 		"""Verify robot's attributes."""

@@ -1,11 +1,18 @@
 """An implementation of a state-driven autonomous robot."""
 
+from importlib import import_module
+import time
+
+import mount
+import sensor
+
 
 MOTOR_LEFT = 0			# Index of the left motor
 MOTOR_RIGHT = 1			# Index of the right motor
-SERVO_CENTER = 93		# Servo angle for centerline
+SERVO_CENTER = 93		# Servo angle equivalent to robot's centerline
 TRIM_STRAIGHT = 90		# Trim setting for straight movement
 DEFAULT_SPEED = 60		# Slowest speed without stalling
+TURN_SPEED_OFFSET = 10	# Added speed for the outside wheel when turning
 SENSOR_PIN = 15			# Pin number on which the US sensor is connected
 
 
@@ -14,7 +21,7 @@ class Robot(object):
 
 	Set the robot in motion by initializing a Robot object and calling run().
 	The robot will run autonomously until a goal state is reached or some
-	unrecoverable exception occurs.
+	unrecoverable exception occurs.  Or until you step on it.
 	"""
 
 	def __init__(self, driver_module='gopigo'):
@@ -31,11 +38,18 @@ class Robot(object):
 		"""
 
 		global driver
-		driver = __import__(driver_module)
+		driver = import_module(driver_module)
+
+		# Initialize motor components
 		driver.stop()
 		driver.set_speed(DEFAULT_SPEED)
-		driver.servo(SERVO_CENTER)
 		driver.trim_write(TRIM_STRAIGHT)
+
+		# Add the forward-facing swivel mount
+		m = mount.SwivelMount(driver=driver, servo_center=SERVO_CENTER)
+
+		# Add the sensor
+		self.sensor = sensor.UltrasonicSensor(driver=driver, mount=m)
 
 		self.state = None
 

@@ -13,3 +13,7 @@ def stop():
 
 def trim_write(trim):
 	calls.append('trim_write({0})'.format(trim))
+
+def us_dist(pin):
+	calls.append('us_dist({0})'.format(pin))
+	return 600  # approximate max range
