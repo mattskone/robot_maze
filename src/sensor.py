@@ -1,5 +1,7 @@
 """Implementations for available sensors."""
 
+DEFAULT_PIN = 15
+
 
 def median(x):
 	"""Return the median of a list of values."""
@@ -13,7 +15,16 @@ def median(x):
 class BaseSensor(object):
 	"""An abstract base class for sensors."""
 
-	def __init__(self, driver=None, mount=None, pin=15):
+	def __init__(self, driver=None, mount=None, pin=DEFAULT_PIN):
+		"""Initialize the sensor.
+
+		Args:
+		driver - a module that exposes the functions used by the sensor.
+		mount - a Mount instance to support sensor movement.  If None, the
+			sensor is fixed (non-moveable).
+		pin - the controller board pin that the sensor is connected to.
+		"""
+
 		self.driver = driver
 		self.mount = mount
 		self.pin = pin
@@ -38,7 +49,10 @@ class UltrasonicSensor(BaseSensor):
 		measurements, and the median measurement is returned.
 		"""
 
-		self.mount.move(x=angle)
+		if angle and not self.mount:
+			raise ValueError('direction commanded to fixed sensor')
+		else:
+			self.mount.move(x=angle)
 
 		measurements = []
 		for i in range(3):
