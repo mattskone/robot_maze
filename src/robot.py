@@ -9,11 +9,9 @@ import sensor
 
 MOTOR_LEFT = 0			# Index of the left motor
 MOTOR_RIGHT = 1			# Index of the right motor
-SERVO_CENTER = 93		# Servo angle equivalent to robot's centerline
 TRIM_STRAIGHT = 90		# Trim setting for straight movement
 DEFAULT_SPEED = 60		# Slowest speed without stalling
 TURN_SPEED_OFFSET = 10	# Added speed for the outside wheel when turning
-SENSOR_PIN = 15			# Pin number on which the US sensor is connected
 
 
 class Robot(object):
@@ -37,21 +35,14 @@ class Robot(object):
 
 		"""
 
-		global driver
-		driver = import_module(driver_module)
+		self.driver = import_module(driver_module)
+		self.sensor = None
+		self.state = None
 
 		# Initialize motor components
-		driver.stop()
-		driver.set_speed(DEFAULT_SPEED)
-		driver.trim_write(TRIM_STRAIGHT)
-
-		# Add the forward-facing swivel mount
-		m = mount.SwivelMount(driver=driver, servo_center=SERVO_CENTER)
-
-		# Add the sensor
-		self.sensor = sensor.UltrasonicSensor(driver=driver, mount=m)
-
-		self.state = None
+		self.driver.stop()
+		self.driver.set_speed(DEFAULT_SPEED)
+		self.driver.trim_write(TRIM_STRAIGHT)
 
 	def run(self):
 		"""Set the robot in motion.
@@ -65,3 +56,14 @@ class Robot(object):
 			# TODO: make the robot determine its state before proceding
 			raise AttributeError('State attribute not set on Robot.')
 		return self.state.run()
+
+	def sense(self, *args, **kwargs):
+		"""Take an return a sensor reading."""
+
+		if not self.sensor:
+			raise ValueError('no sensor configured')
+		
+		return self.sensor.sense(*args, **kwargs)
+
+	def stop(self):
+		self.driver.stop()
