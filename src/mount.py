@@ -2,17 +2,22 @@
 
 import time
 
-SERVO_SHORT_MOVE_TIME = 0.2
-SERVO_LONG_MOVE_TIME = 0.4
-
 
 class SwivelMount(object):
-	"""A mount that can swivel through an arc in 2 dimensions."""
+	"""A mount that can swivel through a horizontal arc."""
 
 	def _is_valid_angle(self, angle):
 		"""Return True if angle between 0 and 359."""
 
 		return 0 <= angle < 360
+
+	def _is_allowable_angle(self, angle):
+		"""Return True if angle is within left/right limits."""
+
+		if self.max_left < self.max_right:
+			return self.max_left <= angle <= self.max_right
+		else:
+			return (angle >= self.max_left) or (angle <= self.max_right)
 
 	def __init__(self, driver=None, center=0, servo_center=90,
 				 clockwise_servo=False, arc=180):
@@ -27,12 +32,14 @@ class SwivelMount(object):
 		clockwise_servo - if True, increasing the servo angle causes the mount
 			to swivel clockwise when viewed from above.
 		arc - the allowable travel of the mount, in degrees
+		swivel_plane - the plane through which the mount can swivel.  'x' is
+			horizontal, 'y' is vertical.
 		"""
 
 		if (not self._is_valid_angle(center) or
 			not self._is_valid_angle(arc) or
 			not self._is_valid_angle(servo_center)):
-				raise ValueError('All angle values must be in range 0-359.')
+				raise ValueError('all angle values must be in range 0-359.')
 
 		self.driver = driver
 		self.mount_center = center
@@ -52,20 +59,30 @@ class SwivelMount(object):
 		else:
 			return (self.servo_center - angle) % 360
 
-	def swivel(self, angle):
-		"""Swivel the mount to the specified angle."""
+	def move(self, x=0, y=0):
+		"""Swivel the mount to the specified direction.
 
-		if not 0 <= angle < 360:
-			raise ValueError('Angle must be in range 0-359.')
+		Args:
+		x - the desired horizontal direction
+		y - not supported for SwivelMount
+		"""
 
-		angle = self._mount_angle_to_servo_angle(angle)
-		self.driver.servo(angle)
+		if not all([self._is_valid_angle(x), self._is_allowable_angle(x)]):
+			raise ValueError('angle must be in range {0}-{1}'.format(
+					self.max_left, self.max_right
+				)
+			)
+		if y:
+			raise ValueError('vertical angle not supported on SwivelMount')
+
+		x = self._mount_angle_to_servo_angle(x)
+		self.driver.servo(x)
 
 		# Allow sufficient time to complete the movement before returning:
 		delay_times = [0.2, 0.4, 0.6, 0.8]  # 0.2 secs per 90 degrees of travel
-		time.sleep(delay_times[abs(self.current_angle - angle) / 90])
+		time.sleep(delay_times[abs(self.current_angle - x) / 90])
 
 	def center(self):
 		"""Center the mount."""
 
-		self.swivel(self.mount_center)
+		self.move(x=self.mount_center)

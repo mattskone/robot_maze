@@ -36,6 +36,13 @@ class MountTest(unittest.TestCase):
 			with self.assertRaises(ValueError):
 				m = mount.SwivelMount(**{attr: 375})
 
+	def test_is_in_arc(self):
+		"""Verify that commanded angles are in max left/right limits."""
+
+		for angle in [91, 180, 269]:
+			with self.assertRaises(ValueError):
+				self.m.move(angle)
+
 	def test_mount_angle_to_servo_angle(self):
 		"""Verify mount angle is translated to the correct servo angle."""
 
@@ -67,19 +74,19 @@ class MountTest(unittest.TestCase):
 				case[1]
 		)
 
-	def test_swivel(self):
+	def test_move(self):
 		"""Verify driver is called correctly to swivel the mount."""
-		self.m.swivel(90)
+		self.m.move(90)
 		self.mock_driver.servo.assert_called_once_with(0)
 
 	def test_swivel_invalid_angles(self):
 		"""Verify exception thrown if invalid angle specified."""
 
-		for angle in [-1, 360]:
+		for x in [-1, 360]:
 			with self.assertRaises(ValueError):
-				self.m.swivel(angle)
+				self.m.move(x=x)
 
-	@patch('mount.SwivelMount.swivel')
-	def test_center(self, mock_swivel):
+	@patch('mount.SwivelMount.move')
+	def test_center(self, mock_move):
 		self.m.center()
-		mock_swivel.assert_called_once_with(0)
+		mock_move.assert_called_once_with(x=0)
