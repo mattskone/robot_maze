@@ -10,12 +10,22 @@ def median(x):
 	return sum(sorted(x)[m - 1:m + 1]) / 2
 
 
-class UltrasonicSensor(object):
+class BaseSensor(object):
+	"""An abstract base class for sensors."""
 
 	def __init__(self, driver=None, mount=None, pin=15):
 		self.driver = driver
 		self.mount = mount
 		self.pin = pin
+
+	def sense(self, *args, **kwargs):
+		raise NotImplementedError
+
+
+class UltrasonicSensor(BaseSensor):
+
+	def sense(self, *args, **kwargs):
+		return self.sense_swath(kwargs['x'])
 
 	def sense_distance(self, angle):
 		"""Sense the distance at a given direction.
@@ -28,7 +38,7 @@ class UltrasonicSensor(object):
 		measurements, and the median measurement is returned.
 		"""
 
-		self.mount.swivel(angle)
+		self.mount.move(x=angle)
 
 		measurements = []
 		for i in range(3):
@@ -49,6 +59,12 @@ class UltrasonicSensor(object):
 
 		measurements = []
 		for a in range(angle - 15, angle + 30, 15):
-			measurements.append(self.sense_distance(a))
+			try:
+				measurements.append(self.sense_distance(a % 360))
+			except ValueError:
+				pass  # silently accept out-of-arc angles
 
-		return min(measurements)
+		if not measurements:
+			raise ValueError('unable to sense at angle {0}'.format(angle))
+		else:
+			return min(measurements)

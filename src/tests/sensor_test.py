@@ -9,6 +9,26 @@ import sensor
 SENSOR_PIN = 0
 
 
+class BaseSensorTest(unittest.TestCase):
+	"""Unit tests for the BaseSensor class."""
+
+	def setUp(self):
+		self.driver = MagicMock()
+		self.mount = MagicMock()
+		self.s = sensor.BaseSensor(driver=self.driver,
+								   mount=self.mount,
+								   pin=SENSOR_PIN)
+
+	def test_init(self):
+		self.assertEqual(self.s.driver, self.driver)
+		self.assertEqual(self.s.mount, self.mount)
+		self.assertEqual(self.s.pin, SENSOR_PIN)
+
+	def test_sense(self):
+		with self.assertRaises(NotImplementedError):
+			self.s.sense(foo='bar')
+
+
 class UltrasonicSensorTest(unittest.TestCase):
 	"""Unit tests for the UltrasonicSensor class."""
 
@@ -19,10 +39,11 @@ class UltrasonicSensorTest(unittest.TestCase):
 										 mount=self.mount,
 										 pin=SENSOR_PIN)
 
-	def test_init(self):
-		self.assertEqual(self.s.driver, self.driver)
-		self.assertEqual(self.s.mount, self.mount)
-		self.assertEqual(self.s.pin, SENSOR_PIN)
+	@patch('sensor.UltrasonicSensor.sense_swath')
+	def test_sense(self, mock_sense_swath):
+		mock_sense_swath.return_value = 50
+		self.assertEqual(self.s.sense(x=45), 50)
+		mock_sense_swath.assert_called_once_with(45)
 
 	def test_sense_distance(self):
 		"""Verify actions to take a distance measurement."""
@@ -31,14 +52,20 @@ class UltrasonicSensorTest(unittest.TestCase):
 		self.driver.us_dist.side_effect = lambda x: measurements.pop()
 
 		self.assertEqual(self.s.sense_distance(60), 29)
-		self.mount.swivel.assert_called_once_with(60)
+		self.mount.move.assert_called_once_with(x=60)
 
 	@patch('sensor.UltrasonicSensor.sense_distance')
 	def test_sense_swath(self, mock_sense_distance):
 		measurements = [101, 100, 102]
 		mock_sense_distance.side_effect = lambda x: measurements.pop()
 
-		self.assertEqual(self.s.sense_swath(45), 100)
-		expected_calls = [call(30), call(45), call(60)]
+		self.assertEqual(self.s.sense_swath(350), 100)
+		expected_calls = [call(335), call(350), call(5)]
 		self.assertEqual(mock_sense_distance.call_args_list,
 						 expected_calls)
+
+	@patch('sensor.UltrasonicSensor.sense_distance')
+	def test_sense_swath_out_of_arc(self, mock_sense_distance):
+		mock_sense_distance.side_effect = ValueError()
+		with self.assertRaises(ValueError):
+			self.s.sense_swath(180)
