@@ -11,7 +11,7 @@ MOTOR_LEFT = 0			# Index of the left motor
 MOTOR_RIGHT = 1			# Index of the right motor
 TRIM_STRAIGHT = 90		# Trim setting for straight movement
 DEFAULT_SPEED = 60		# Slowest speed without stalling
-TURN_SPEED_OFFSET = 10	# Added speed for the outside wheel when turning
+TURN_SPEED = 10			# Added speed for the outside wheel when turning
 
 
 class Robot(object):
@@ -41,6 +41,7 @@ class Robot(object):
 
 		# Initialize motor components
 		self.driver.stop()
+		self.speed = [0, 0]  # [left, right motor]
 		self.driver.set_speed(DEFAULT_SPEED)
 		self.driver.trim_write(TRIM_STRAIGHT)
 
@@ -67,3 +68,29 @@ class Robot(object):
 
 	def stop(self):
 		self.driver.stop()
+
+	def fwd(self):
+		self.driver.set_speed(DEFAULT_SPEED)
+		self.driver.fwd()
+		self.speed = [DEFAULT_SPEED, DEFAULT_SPEED]
+
+	def steer(self, steering_factor):
+		"""Adjust wheel speeds to adjust turning rate.
+
+		Args:
+		steering_factor - a multiple to scale TURN_SPEED, which computes the
+			new speed of the outside wheel of the turn.  Postive values result
+			in a left turn, and negative values in a right turn.
+		"""
+
+		turn_wheel_speed = DEFAULT_SPEED + abs(steering_factor) * TURN_SPEED
+
+		if steering_factor > 0:
+			self.speed = [DEFAULT_SPEED, turn_wheel_speed]
+		elif steering_factor < 0:
+			self.speed = [turn_wheel_speed, DEFAULT_SPEED]
+		else:
+			self.speed = [DEFAULT_SPEED, DEFAULT_SPEED]
+
+		self.driver.set_left_speed(self.speed[0])
+		self.driver.set_right_speed(self.speed[1])

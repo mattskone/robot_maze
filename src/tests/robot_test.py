@@ -20,6 +20,7 @@ class RobotTests(unittest.TestCase):
 
 		self.assertEqual(self.r.state, None)
 		self.assertEqual(self.r.sensor, self.mock_sensor)
+		self.assertEqual(self.r.speed, [0, 0])
 
 	def test_run(self):
 		"""Verify run() is delegated to the robot's state."""
@@ -46,3 +47,53 @@ class RobotTests(unittest.TestCase):
 
 		self.r.stop()
 		self.assertEqual(self.r.driver.calls[-1], 'stop()')
+
+	def test_fwd(self):
+		"""Verify fwd() is delegated to the driver."""
+
+		self.r.fwd()
+		self.assertEqual(self.r.speed,
+						 [robot.DEFAULT_SPEED, robot.DEFAULT_SPEED])
+		self.assertEqual(self.r.driver.calls[-1], 'fwd()')
+		self.assertEqual(self.r.driver.calls[-2],
+						 'set_speed({0})'.format(robot.DEFAULT_SPEED))
+
+	def test_steer(self):
+		"""Verify steer() is translated correctly to driver."""
+
+		self.r.speed = [robot.DEFAULT_SPEED, robot.DEFAULT_SPEED]
+
+		# Steer to the left
+		self.r.steer(1.5)
+		expected_speed = robot.DEFAULT_SPEED + 1.5 * robot.TURN_SPEED
+		self.assertEqual(
+			self.r.speed,
+			[robot.DEFAULT_SPEED, expected_speed]
+		)
+		self.assertEqual(self.r.driver.calls[-1],
+						 'set_right_speed({0})'.format(expected_speed))
+		self.assertEqual(self.r.driver.calls[-2],
+						 'set_left_speed({0})'.format(robot.DEFAULT_SPEED))
+
+		# Steer to the right
+		self.r.steer(-1)
+		expected_speed = robot.DEFAULT_SPEED + robot.TURN_SPEED
+		self.assertEqual(
+			self.r.speed,
+			[expected_speed, robot.DEFAULT_SPEED]
+		)
+		self.assertEqual(self.r.driver.calls[-1],
+						 'set_right_speed({0})'.format(robot.DEFAULT_SPEED))
+		self.assertEqual(self.r.driver.calls[-2],
+						 'set_left_speed({0})'.format(expected_speed))
+
+		# Steer straight ahead
+		self.r.steer(0)
+		self.assertEqual(
+			self.r.speed,
+			[robot.DEFAULT_SPEED, robot.DEFAULT_SPEED]
+		)
+		self.assertEqual(self.r.driver.calls[-1],
+						 'set_right_speed({0})'.format(robot.DEFAULT_SPEED))
+		self.assertEqual(self.r.driver.calls[-2],
+						 'set_left_speed({0})'.format(robot.DEFAULT_SPEED))
