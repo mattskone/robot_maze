@@ -6,10 +6,19 @@ def servo(angle):
 	calls.append('servo({0})'.format(angle))
 
 def set_speed(speed):
-	calls.append('set_speed({0}'.format(speed))
+	calls.append('set_speed({0})'.format(speed))
+
+def set_left_speed(speed):
+	calls.append('set_left_speed({0})'.format(speed))
+
+def set_right_speed(speed):
+	calls.append('set_right_speed({0})'.format(speed))
 
 def stop():
 	calls.append('stop()')
+
+def fwd():
+	calls.append('fwd()')
 
 def trim_write(trim):
 	calls.append('trim_write({0})'.format(trim))
