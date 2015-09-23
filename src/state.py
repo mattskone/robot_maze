@@ -11,7 +11,7 @@ class BaseState(object):
 		self.robot = robot
 		self.is_oriented = False  # wut?  states aren't oriented.  robots are.
 
-	def run(self, callback, *args, **kwargs):
+	def run(self, *args, **kwargs):
 		raise NotImplementedError()
 
 
@@ -46,7 +46,7 @@ class CorridorState(BaseState):
 		return (width / 2.0 - left_dist, width)
 
 
-	def run(self, callback, *args, **kwargs):
+	def run(self, *args, **kwargs):
 		print 'Running CorridorState'
 
 		# Ensure the robot is stopped
@@ -73,7 +73,7 @@ class CorridorState(BaseState):
 		while not new_state:
 
 			# Sense new cte
-			angle = SENSOR_ANGLES[sensor_side]
+			angle = self.SENSOR_ANGLES[sensor_side]
 			dist = self.robot.sense(x=angle)
 			if sensor_side == 'R':
 				new_cte = dist - width
@@ -84,12 +84,18 @@ class CorridorState(BaseState):
 			# TODO: sense logic for state change detection
 
 			# Adjust steering
-			steering_factor = -TAU_P * new_cte - TAU_D * (new_cte - last_cte)
+			steering_factor = -self.TAU_P * new_cte - self.TAU_D * (new_cte - last_cte)
 			self.robot.steer(steering_factor)
 			last_cte = new_cte
 
+			# Set sensor side to the wall that the robot is steering toward
+			if steering_factor > 0:
+				sensor_side = 'L'
+			else:
+				sensor_side = 'R'
+
 			# Pause for delay period:
-			time.sleep(MOVE_DURATION)
+			time.sleep(self.MOVE_DURATION)
 
 			# Print debug data
 			print sensor_side, dist, last_cte, steering_factor

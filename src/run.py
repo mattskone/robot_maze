@@ -13,7 +13,7 @@ def go():
 	r = robot.Robot()
 	m = mount.SwivelMount(driver=r.driver, servo_center=93)
 	s = sensor.UltrasonicSensor(driver=r.driver, mount=m)
-	cs = state.CorridorState()
+	cs = state.CorridorState(robot=r)
 
 	r.sensor = s
 	r.state = cs
