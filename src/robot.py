@@ -10,7 +10,7 @@ import sensor
 MOTOR_LEFT = 0			# Index of the left motor
 MOTOR_RIGHT = 1			# Index of the right motor
 TRIM_STRAIGHT = -10		# Trim setting for straight movement
-DEFAULT_SPEED = 120  #60		# Slowest speed without stalling
+DEFAULT_SPEED = 120  	# Slowest speed without stall (60/120 for batt/cable)
 TURN_SPEED = 10			# Added speed for the outside wheel when turning
 
 
