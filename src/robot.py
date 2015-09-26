@@ -10,8 +10,9 @@ import sensor
 MOTOR_LEFT = 0			# Index of the left motor
 MOTOR_RIGHT = 1			# Index of the right motor
 TRIM_STRAIGHT = -10		# Trim setting for straight movement
-DEFAULT_SPEED = 120  	# Slowest speed without stall (60/120 for batt/cable)
+DEFAULT_SPEED = 60  	# Slowest speed without stall (60/120 for batt/cable)
 TURN_SPEED = 10			# Added speed for the outside wheel when turning
+MAX_TURN_SPEED = 30		# Limit the speed differential when turning
 
 
 class Robot(object):
@@ -83,7 +84,10 @@ class Robot(object):
 			in a left turn, and negative values in a right turn.
 		"""
 
-		turn_wheel_speed = int(DEFAULT_SPEED + abs(steering_factor) * TURN_SPEED)
+		turn_wheel_speed = min([
+			int(DEFAULT_SPEED + abs(steering_factor) * TURN_SPEED),
+			int(DEFAULT_SPEED + MAX_TURN_SPEED)
+		])
 
 		if steering_factor > 0:
 			self.speed = [DEFAULT_SPEED, turn_wheel_speed]
