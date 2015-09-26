@@ -64,8 +64,8 @@ class RobotTests(unittest.TestCase):
 		self.r.speed = [robot.DEFAULT_SPEED, robot.DEFAULT_SPEED]
 
 		# Steer to the left
-		self.r.steer(1.5)
-		expected_speed = int(robot.DEFAULT_SPEED + 1.5 * robot.TURN_SPEED)
+		self.r.steer(1.2)
+		expected_speed = int(robot.DEFAULT_SPEED + 1.2 * robot.TURN_SPEED)
 		self.assertEqual(
 			self.r.speed,
 			[robot.DEFAULT_SPEED, expected_speed]
@@ -89,7 +89,7 @@ class RobotTests(unittest.TestCase):
 
 		# Steer too much to the right
 		self.r.steer(-5)
-		expected_speed = robot.DEFAULT_SPEED + robot.MAX_TURN_SPEED
+		expected_speed = int(robot.DEFAULT_SPEED * robot.MAX_TURN_RATIO)
 		self.assertEqual(
 			self.r.speed,
 			[expected_speed, robot.DEFAULT_SPEED]

@@ -12,7 +12,7 @@ MOTOR_RIGHT = 1			# Index of the right motor
 TRIM_STRAIGHT = -10		# Trim setting for straight movement
 DEFAULT_SPEED = 60  	# Slowest speed without stall (60/120 for batt/cable)
 TURN_SPEED = 10			# Added speed for the outside wheel when turning
-MAX_TURN_SPEED = 30		# Limit the speed differential when turning
+MAX_TURN_RATIO = 1.2	# Max ratio of outside wheel to inside wheel speeds
 
 
 class Robot(object):
@@ -86,7 +86,7 @@ class Robot(object):
 
 		turn_wheel_speed = min([
 			int(DEFAULT_SPEED + abs(steering_factor) * TURN_SPEED),
-			int(DEFAULT_SPEED + MAX_TURN_SPEED)
+			int(DEFAULT_SPEED * MAX_TURN_RATIO)
 		])
 
 		if steering_factor > 0:
