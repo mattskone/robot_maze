@@ -1,6 +1,7 @@
 """Implementations for available sensors."""
 
 DEFAULT_PIN = 15
+MOUNT_ERROR = 2.5	# Distance in cm from the mount point to the sensor face
 
 
 def median(x):
@@ -56,7 +57,7 @@ class UltrasonicSensor(BaseSensor):
 
 		measurements = []
 		for i in range(3):
-			measurements.append(self.driver.us_dist(self.pin))
+			measurements.append(self.driver.us_dist(self.pin) + MOUNT_ERROR)
 
 		return median(measurements)
 
