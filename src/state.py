@@ -76,9 +76,9 @@ class CorridorState(BaseState):
 			angle = self.SENSOR_ANGLES[sensor_side]
 			dist = self.robot.sense(x=angle)
 			if sensor_side == 'R':
-				new_cte = dist - width
+				new_cte = dist - width / 2.0
 			else:
-				new_cte = width - dist
+				new_cte = width / 2.0 - dist
 
 			# Check for new state
 			# TODO: sense logic for state change detection
