@@ -50,8 +50,9 @@ class UltrasonicSensorTest(unittest.TestCase):
 
 		measurements = [29, 29, 28]
 		self.driver.us_dist.side_effect = lambda x: measurements.pop()
+		expected_measurement = 29 + sensor.MOUNT_ERROR
 
-		self.assertEqual(self.s.sense_distance(60), 29)
+		self.assertEqual(self.s.sense_distance(60), expected_measurement)
 		self.mount.move.assert_called_once_with(x=60)
 
 	@patch('sensor.UltrasonicSensor.sense_distance')
