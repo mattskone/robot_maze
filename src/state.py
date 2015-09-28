@@ -27,8 +27,8 @@ class CorridorState(BaseState):
 		'L': 300,  # default angle for sensing to the left
 		'R': 60    # default angle for sensing to the right
 	}
-	TAU_P = 0.1
-	TAU_D = 0.5
+	TAU_P = 0.2
+	TAU_D = 1.0
 
 	def _sense_initial_position(self):
 		"""Learn about this corridor and our place in it.
@@ -60,9 +60,9 @@ class CorridorState(BaseState):
 		last_cte, width = self._sense_initial_position()
 		print 'Corridor width: {0}'.format(width)
 		if last_cte > 0:
-			sensor_side = 'R'
-		else:
 			sensor_side = 'L'
+		else:
+			sensor_side = 'R'
 
 		# Start the robot
 		self.robot.fwd()
@@ -90,9 +90,9 @@ class CorridorState(BaseState):
 
 			# Set sensor side to the wall that the robot is steering toward
 			if steering_factor > 0:
-				sensor_side = 'L'
+				pass #sensor_side = 'L'
 			else:
-				sensor_side = 'R'
+				pass #sensor_side = 'R'
 
 			# Pause for delay period:
 			time.sleep(self.MOVE_DURATION)

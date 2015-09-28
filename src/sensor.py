@@ -59,6 +59,8 @@ class UltrasonicSensor(BaseSensor):
 		for i in range(3):
 			measurements.append(self.driver.us_dist(self.pin) + MOUNT_ERROR)
 
+		print 'Sensed {0} cm at angle {1}'.format(median(measurements), angle)
+
 		return median(measurements)
 
 	def sense_swath(self, angle):
@@ -73,7 +75,7 @@ class UltrasonicSensor(BaseSensor):
 		"""
 
 		measurements = []
-		for a in range(angle - 15, angle + 30, 15):
+		for a in range(angle - 20, angle + 40, 20):
 			try:
 				measurements.append(self.sense_distance(a % 360))
 			except ValueError:
