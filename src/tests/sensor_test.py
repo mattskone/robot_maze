@@ -61,7 +61,7 @@ class UltrasonicSensorTest(unittest.TestCase):
 		mock_sense_distance.side_effect = lambda x: measurements.pop()
 
 		self.assertEqual(self.s.sense_swath(350), 100)
-		expected_calls = [call(335), call(350), call(5)]
+		expected_calls = [call(330), call(350), call(10)]
 		self.assertEqual(mock_sense_distance.call_args_list,
 						 expected_calls)
 
