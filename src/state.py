@@ -67,10 +67,7 @@ class CorridorState(BaseState):
 		# Start the robot
 		self.robot.fwd()
 
-		# True when a new (non-corridor) state is detected
-		new_state = False
-
-		while not new_state:
+		while True:
 
 			# Sense new cte
 			angle = self.SENSOR_ANGLES[sensor_side]
@@ -81,7 +78,9 @@ class CorridorState(BaseState):
 				new_cte = width / 2.0 - dist
 
 			# Check for new state
-			# TODO: sense logic for state change detection
+			# TODO: expand this to check straight ahead and opposite side
+			if new_cte > width:
+				break
 
 			# Adjust steering
 			steering_factor = -self.TAU_P * new_cte - self.TAU_D * (new_cte - last_cte)
