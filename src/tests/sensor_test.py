@@ -28,6 +28,9 @@ class BaseSensorTest(unittest.TestCase):
 		with self.assertRaises(NotImplementedError):
 			self.s.sense(foo='bar')
 
+	def test_center(self):
+		self.s.center()
+		self.mount.center.assert_called_once_with()
 
 class UltrasonicSensorTest(unittest.TestCase):
 	"""Unit tests for the UltrasonicSensor class."""

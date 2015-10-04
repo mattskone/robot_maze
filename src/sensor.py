@@ -33,6 +33,11 @@ class BaseSensor(object):
 	def sense(self, *args, **kwargs):
 		raise NotImplementedError
 
+	def center(self):
+		if not self.mount:
+			raise ValueError('center commanded to fixed sensor')
+		self.mount.center()
+
 
 class UltrasonicSensor(BaseSensor):
 

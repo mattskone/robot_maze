@@ -46,6 +46,7 @@ class RobotTests(unittest.TestCase):
 		"""Verify stop() is delegated to the driver."""
 
 		self.r.stop()
+		self.mock_sensor.center.assert_called_once_with()
 		self.assertEqual(self.r.driver.calls[-1], 'stop()')
 
 	def test_fwd(self):

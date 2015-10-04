@@ -68,6 +68,7 @@ class Robot(object):
 		return self.sensor.sense(*args, **kwargs)
 
 	def stop(self):
+		self.sensor.center()  # Because OCD is a thing
 		self.driver.stop()
 
 	def fwd(self):
