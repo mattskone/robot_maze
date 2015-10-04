@@ -23,7 +23,8 @@ class CorridorState(BaseState):
 	"""
 
 	MOVE_DURATION = 1  # seconds of movement before the next sensor measurement
-	SENSOR_ANGLES = {
+	SENSOR_ANGLES = {  # commonly-used sensor directions
+		'C': 0,	   # shortcut for sensing straight ahead
 		'L': 300,  # default angle for sensing to the left
 		'R': 60    # default angle for sensing to the right
 	}
@@ -60,9 +61,11 @@ class CorridorState(BaseState):
 		last_cte, width = self._sense_initial_position()
 		print 'Corridor width: {0}'.format(width)
 		if last_cte > 0:
-			sensor_side = 'L'
+			sensing_side = 'L'
+			opposite_side = 'R'
 		else:
-			sensor_side = 'R'
+			sensing_side = 'R'
+			opposite_side = 'L'
 
 		# Start the robot
 		self.robot.fwd()
@@ -70,12 +73,18 @@ class CorridorState(BaseState):
 		while True:
 
 			# Sense current distance from side of corridor
-			angle = self.SENSOR_ANGLES[sensor_side]
-			dist = self.robot.sense(x=angle)
+			dist = self.robot.sense(x=SENSOR_ANGLES[sensing_side])
+			ahead_dist = self.robot.sense(x=SENSOR_ANGLES['C'])
+			opposite_dist = self.robot.sense(x=SENSOR_ANGLES[opposite_side])
+
+			# Check for dead end
+			if (ahead_dist < width) and (dist < width) and (opposite_dist < width):
+				print 'Dead end'
+				self.robot.turn_around()
+				self.run(*args, **kwargs)
 
 			# Check for new state
-			# TODO: expand this to check straight ahead and opposite side
-			if dist > width:
+			if (dist > width) or (opposite_dist > width) or (ahead_dist < width):
 				print 'End of corridor'
 				self.robot.stop()
 				break
