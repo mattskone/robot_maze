@@ -22,7 +22,7 @@ class CorridorState(BaseState):
 	reference trajectory (centerline of the corridor).
 	"""
 
-	MOVE_DURATION = 1  # seconds of movement before the next sensor measurement
+	MOVE_DURATION = 2  # seconds of movement before the next sensor measurement
 	SENSOR_ANGLES = {  # commonly-used sensor directions
 		'C': 0,	   # shortcut for sensing straight ahead
 		'L': 300,  # default angle for sensing to the left
@@ -72,10 +72,16 @@ class CorridorState(BaseState):
 
 		while True:
 
+			self.robot.stop()
+
 			# Sense current distance from side of corridor
-			dist = self.robot.sense(x=SENSOR_ANGLES[sensing_side])
-			ahead_dist = self.robot.sense(x=SENSOR_ANGLES['C'])
-			opposite_dist = self.robot.sense(x=SENSOR_ANGLES[opposite_side])
+			dist = self.robot.sense(x=self.SENSOR_ANGLES[sensing_side])
+			ahead_dist = self.robot.sense(x=self.SENSOR_ANGLES['C'])
+			opposite_dist = self.robot.sense(x=self.SENSOR_ANGLES[opposite_side])
+
+			print '{0} {1}cm'.format(sensing_side, dist)
+			print 'C {0}cm'.format(ahead_dist)
+			print '{0} {1}cm'.format(opposite_side, opposite_dist)
 
 			# Check for dead end
 			if (ahead_dist < width) and (dist < width) and (opposite_dist < width):
@@ -90,7 +96,7 @@ class CorridorState(BaseState):
 				break
 
 			# Compute new CTE
-			if sensor_side == 'R':
+			if sensing_side == 'R':
 				new_cte = dist - width / 2.0
 			else:
 				new_cte = width / 2.0 - dist
@@ -106,8 +112,10 @@ class CorridorState(BaseState):
 			else:
 				pass #sensor_side = 'R'
 
+			self.robot.fwd()
+
 			# Pause for delay period:
 			time.sleep(self.MOVE_DURATION)
 
 			# Print debug data
-			print sensor_side, dist, last_cte, steering_factor
+			print sensing_side, dist, last_cte, steering_factor

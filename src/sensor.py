@@ -67,9 +67,9 @@ class UltrasonicSensor(BaseSensor):
 		for i in range(3):
 			measurements.append(self.driver.us_dist(self.pin))
 
-		print 'Sensed {0} cm at angle {1}'.format(median(measurements), angle)
+		# print 'Sensed {0} cm at angle {1}'.format(median(measurements), angle)
 
-		return self.error_fnc(median(measurements))
+		return int(self.error_fnc(median(measurements)))
 
 	def sense_swath(self, angle):
 		"""Sense the distance at a given general direction.
