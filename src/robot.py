@@ -13,6 +13,7 @@ TRIM_STRAIGHT = -10		# Trim setting for straight movement
 DEFAULT_SPEED = 60  	# Slowest speed without stall (60/120 for batt/cable)
 TURN_SPEED = 10			# Added speed for the outside wheel when turning
 MAX_TURN_RATIO = 1.2	# Max ratio of outside wheel to inside wheel speeds
+DEGREES_PER_TICK = 10	# Degrees of robot rotation in one encoder tick
 
 
 class Robot(object):
@@ -75,6 +76,22 @@ class Robot(object):
 		self.driver.set_speed(DEFAULT_SPEED)
 		self.driver.fwd()
 		self.speed = [DEFAULT_SPEED, DEFAULT_SPEED]
+
+	def rotate(self, degrees=0):
+		"""Rotate the robot in place the given number of degrees.
+
+		Args:
+		degrees - the number of degrees to rotate (-360 to 360).  Positive
+			degrees command a right-hand rotation, and negative degrees command
+			a left-hand rotation.
+		"""
+
+		self.driver.stop()
+		if degrees > 0:
+			self.driver.enc_tgt(1, 0, int(degrees / DEGREES_PER_TICK))
+		else:
+			self.driver.enc_tgt(0, 1, abs(int(degrees / DEGREES_PER_TICK)))
+		self.driver.right_rot()
 
 	def steer(self, steering_factor):
 		"""Adjust wheel speeds to adjust turning rate.

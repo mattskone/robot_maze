@@ -80,7 +80,7 @@ class CorridorState(BaseState):
 			# Check for dead end
 			if (ahead_dist < width) and (dist < width) and (opposite_dist < width):
 				print 'Dead end'
-				self.robot.turn_around()
+				self.robot.rotate(degrees=180)
 				self.run(*args, **kwargs)
 
 			# Check for new state

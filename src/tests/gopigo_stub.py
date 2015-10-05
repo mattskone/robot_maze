@@ -20,6 +20,12 @@ def stop():
 def fwd():
 	calls.append('fwd()')
 
+def enc_tgt(*args):
+	calls.append('enc_tgt{0}'.format(args))
+
+def right_rot():
+	calls.append('right_rot()')
+
 def trim_write(trim):
 	calls.append('trim_write({0})'.format(trim))
 

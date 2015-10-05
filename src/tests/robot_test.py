@@ -59,6 +59,21 @@ class RobotTests(unittest.TestCase):
 		self.assertEqual(self.r.driver.calls[-2],
 						 'set_speed({0})'.format(robot.DEFAULT_SPEED))
 
+	def test_rotate(self):
+		"""Verify rotate() is executed correctly."""
+
+		expected_calls = ['stop()',
+						  'enc_tgt(1, 0, 18)',
+						  'right_rot()']
+		self.r.rotate(degrees=180)
+		self.assertEqual(self.r.driver.calls[-3:], expected_calls)
+
+		expected_calls = ['stop()',
+						  'enc_tgt(0, 1, 9)',
+						  'right_rot()']
+		self.r.rotate(degrees=-90)
+		self.assertEqual(self.r.driver.calls[-3:], expected_calls)
+
 	def test_steer(self):
 		"""Verify steer() is translated correctly to driver."""
 
