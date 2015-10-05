@@ -1,7 +1,6 @@
 """Implementations for available sensors."""
 
 DEFAULT_PIN = 15
-MOUNT_ERROR = 2.5	# Distance in cm from the mount point to the sensor face
 
 
 def median(x):
@@ -16,7 +15,8 @@ def median(x):
 class BaseSensor(object):
 	"""An abstract base class for sensors."""
 
-	def __init__(self, driver=None, mount=None, pin=DEFAULT_PIN):
+	def __init__(self, driver=None, mount=None, pin=DEFAULT_PIN,
+				 error_fnc=lambda x: x):
 		"""Initialize the sensor.
 
 		Args:
@@ -24,11 +24,14 @@ class BaseSensor(object):
 		mount - a Mount instance to support sensor movement.  If None, the
 			sensor is fixed (non-moveable).
 		pin - the controller board pin that the sensor is connected to.
+		error_fnc - a function that corrects a sensor reading for error
+			(default no error).
 		"""
 
 		self.driver = driver
 		self.mount = mount
 		self.pin = pin
+		self.error_fnc = error_fnc
 
 	def sense(self, *args, **kwargs):
 		raise NotImplementedError
@@ -62,11 +65,11 @@ class UltrasonicSensor(BaseSensor):
 
 		measurements = []
 		for i in range(3):
-			measurements.append(self.driver.us_dist(self.pin) + MOUNT_ERROR)
+			measurements.append(self.driver.us_dist(self.pin))
 
 		print 'Sensed {0} cm at angle {1}'.format(median(measurements), angle)
 
-		return median(measurements)
+		return self.error_fnc(median(measurements))
 
 	def sense_swath(self, angle):
 		"""Sense the distance at a given general direction.

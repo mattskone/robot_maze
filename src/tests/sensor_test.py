@@ -17,12 +17,14 @@ class BaseSensorTest(unittest.TestCase):
 		self.mount = MagicMock()
 		self.s = sensor.BaseSensor(driver=self.driver,
 								   mount=self.mount,
-								   pin=SENSOR_PIN)
+								   pin=SENSOR_PIN,
+								   error_fnc='some_fnc')
 
 	def test_init(self):
 		self.assertEqual(self.s.driver, self.driver)
 		self.assertEqual(self.s.mount, self.mount)
 		self.assertEqual(self.s.pin, SENSOR_PIN)
+		self.assertEqual(self.s.error_fnc, 'some_fnc')
 
 	def test_sense(self):
 		with self.assertRaises(NotImplementedError):
@@ -32,6 +34,12 @@ class BaseSensorTest(unittest.TestCase):
 		self.s.center()
 		self.mount.center.assert_called_once_with()
 
+
+def ultrasonic_sensor_error(raw_sensor_value):
+	"""A fake sensor error function."""
+	return raw_sensor_value * 1.1
+
+
 class UltrasonicSensorTest(unittest.TestCase):
 	"""Unit tests for the UltrasonicSensor class."""
 
@@ -40,7 +48,8 @@ class UltrasonicSensorTest(unittest.TestCase):
 		self.mount = MagicMock()
 		self.s = sensor.UltrasonicSensor(driver=self.driver,
 										 mount=self.mount,
-										 pin=SENSOR_PIN)
+										 pin=SENSOR_PIN,
+										 error_fnc=ultrasonic_sensor_error)
 
 	@patch('sensor.UltrasonicSensor.sense_swath')
 	def test_sense(self, mock_sense_swath):
@@ -53,7 +62,7 @@ class UltrasonicSensorTest(unittest.TestCase):
 
 		measurements = [29, 29, 28]
 		self.driver.us_dist.side_effect = lambda x: measurements.pop()
-		expected_measurement = 29 + sensor.MOUNT_ERROR
+		expected_measurement = ultrasonic_sensor_error(29)
 
 		self.assertEqual(self.s.sense_distance(60), expected_measurement)
 		self.mount.move.assert_called_once_with(x=60)
