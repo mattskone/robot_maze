@@ -10,7 +10,7 @@ import state
 
 
 def sensor_error(raw_sensor_value):
-	"""Sensor error derived from field tests."""
+	"""Actual sensor error derived from field tests."""
 	return (raw_sensor_value + 2.5) / 1.32
 
 
