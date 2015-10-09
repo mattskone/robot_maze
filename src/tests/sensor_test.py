@@ -62,7 +62,7 @@ class UltrasonicSensorTest(unittest.TestCase):
 
 		measurements = [29, 29, 28]
 		self.driver.us_dist.side_effect = lambda x: measurements.pop()
-		expected_measurement = ultrasonic_sensor_error(29)
+		expected_measurement = int(ultrasonic_sensor_error(29))
 
 		self.assertEqual(self.s.sense_distance(60), expected_measurement)
 		self.mount.move.assert_called_once_with(x=60)

@@ -10,7 +10,7 @@ import sensor
 MOTOR_LEFT = 0			# Index of the left motor
 MOTOR_RIGHT = 1			# Index of the right motor
 TRIM_STRAIGHT = -10		# Trim setting for straight movement
-DEFAULT_SPEED = 90  	# Slowest speed without stall (60/120 for batt/cable)
+DEFAULT_SPEED = 120  	# Slowest speed without stall (60/120 for batt/cable)
 TURN_SPEED = 10			# Added speed for the outside wheel when turning
 MAX_TURN_RATIO = 1.2	# Max ratio of outside wheel to inside wheel speeds
 DEGREES_PER_TICK = 10	# Degrees of robot rotation in one encoder tick

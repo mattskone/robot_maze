@@ -24,7 +24,6 @@ class CorridorState(BaseState):
 
 	MOVE_DURATION = 2  # seconds of movement before the next sensor measurement
 	SENSOR_ANGLES = {  # commonly-used sensor directions
-		'C': 0,	   # shortcut for sensing straight ahead
 		'L': 300,  # default angle for sensing to the left
 		'R': 60    # default angle for sensing to the right
 	}
@@ -72,25 +71,11 @@ class CorridorState(BaseState):
 
 		while True:
 
-			self.robot.stop()
-
 			# Sense current distance from side of corridor
 			dist = self.robot.sense(x=self.SENSOR_ANGLES[sensing_side])
-			ahead_dist = self.robot.sense(x=self.SENSOR_ANGLES['C'])
-			opposite_dist = self.robot.sense(x=self.SENSOR_ANGLES[opposite_side])
-
-			print '{0} {1}cm'.format(sensing_side, dist)
-			print 'C {0}cm'.format(ahead_dist)
-			print '{0} {1}cm'.format(opposite_side, opposite_dist)
-
-			# Check for dead end
-			if (ahead_dist < width) and (dist < width) and (opposite_dist < width):
-				print 'Dead end'
-				self.robot.rotate(degrees=180)
-				self.run(*args, **kwargs)
 
 			# Check for new state
-			if (dist > width) or (opposite_dist > width) or (ahead_dist < width):
+			if dist > width:
 				print 'End of corridor'
 				self.robot.stop()
 				break
@@ -105,14 +90,6 @@ class CorridorState(BaseState):
 			steering_factor = -self.TAU_P * new_cte - self.TAU_D * (new_cte - last_cte)
 			self.robot.steer(steering_factor)
 			last_cte = new_cte
-
-			# Set sensor side to the wall that the robot is steering toward
-			if steering_factor > 0:
-				pass #sensor_side = 'L'
-			else:
-				pass #sensor_side = 'R'
-
-			self.robot.fwd()
 
 			# Pause for delay period:
 			time.sleep(self.MOVE_DURATION)
