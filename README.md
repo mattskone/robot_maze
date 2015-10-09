@@ -35,9 +35,13 @@ I selected it for the following qualities:
  1. (Relatively) inexpensive at $199.
  1. Easy to assemble.
 
-### Software
+### Usage
 
-Discussion to follow...
+ 1. Begin a terminal session on the GoPiGo from another machine on the network.  SSH works fine, but you may also use VNC to view the GoPiGo's desktop and begin a terminal session from there.
+ 1. Clone the contents of this repository to a directory on the GoPiGo.
+ 1. Start the robot with `python ./run.py`.
+
+Note that the code requires the `gopigo` Python library which comes preinstalled on the GoPiGo.  The unit tests use the `gopigo_stub` module so that you don't need the `gopigo` library on your development machine.
 
 ### License
 
