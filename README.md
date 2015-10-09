@@ -45,4 +45,4 @@ Note that the code requires the `gopigo` Python library which comes preinstalled
 
 ### License
 
-Use of the contents of this repository is governed by the [MIT License](https://github.com/mattskone/robot_maze/blob/develop/LICENSE).
+The use of the contents of this repository is governed by the [MIT License](https://github.com/mattskone/robot_maze/blob/develop/LICENSE).
