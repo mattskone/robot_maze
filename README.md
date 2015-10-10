@@ -43,6 +43,9 @@ I selected it for the following qualities:
 
 Note that the code requires the `gopigo` Python library which comes preinstalled on the GoPiGo.  The unit tests use the `gopigo_stub` module so that you don't need the `gopigo` library on your development machine.
 
+### Release Notes
+ - _v1.0_: The robot will navigate a straight corridor, with steering adjustments calculated using the PD controller algorithm.
+
 ### License
 
 The use of the contents of this repository is governed by the [MIT License](https://github.com/mattskone/robot_maze/blob/develop/LICENSE).
