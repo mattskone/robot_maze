@@ -72,10 +72,12 @@ class UltrasonicSensorTest(unittest.TestCase):
 		measurements = [101, 100, 102]
 		mock_sense_distance.side_effect = lambda x: measurements.pop()
 
-		self.assertEqual(self.s.sense_swath(350), 100)
-		expected_calls = [call(330), call(350), call(10)]
+		self.assertEqual(
+			self.s.sense_swath(center=350, width=40, num_measurements=3),
+			100
+		)
 		self.assertEqual(mock_sense_distance.call_args_list,
-						 expected_calls)
+						 [call(330), call(350), call(10)])
 
 	@patch('sensor.UltrasonicSensor.sense_distance')
 	def test_sense_swath_out_of_arc(self, mock_sense_distance):

@@ -71,19 +71,31 @@ class UltrasonicSensor(BaseSensor):
 
 		return int(self.error_fnc(median(measurements)))
 
-	def sense_swath(self, angle):
+	def sense_swath(self, center=0, width=0, num_measurements=1,
+					return_all_measurements=False):
 		"""Sense the distance at a given general direction.
 
 		Args:
-		angle - the center of the swath to measure, where 0 is straight ahead.
+		center - the center of the swath to measure, in degrees, where 0 is
+			straight ahead.
+		width - the width of the swath, in degrees.
+		num_measurements - the number of measurements to take, evenly spread
+			across width, centered on center.
+		return_all_measurements - if True, returns a list of all measurements
+			taken.
 
 		Returns distance in cm.  Measurements are taken at the given angle, and
-			at +/- 15 degrees from that angle, for a 30-degree swath. The
-			smallest distance is returned.
+			at +/- <interval> degrees from that angle.  The smallest distance
+			is returned, unless return_all_measurements is True, in which case
+			a list of all measurements is returned.
 		"""
 
 		measurements = []
-		for a in range(angle - 20, angle + 40, 20):
+		left_limit = int(center) - int(width / 2)
+		right_limit = int(center) + int(width / 2)
+		interval = int(width / ((num_measurements - 1) or 1))
+		
+		for a in range(left_limit, right_limit + 1, interval):
 			try:
 				measurements.append(self.sense_distance(a % 360))
 			except ValueError:
@@ -91,5 +103,8 @@ class UltrasonicSensor(BaseSensor):
 
 		if not measurements:
 			raise ValueError('unable to sense at angle {0}'.format(angle))
+		
+		if return_all_measurements:
+			return measurements
 		else:
 			return min(measurements)
