@@ -22,7 +22,7 @@ class CorridorState(BaseState):
 	reference trajectory (centerline of the corridor).
 	"""
 
-	MOVE_DURATION = 2  # seconds of movement before the next sensor measurement
+	MOVE_DURATION = 1  # seconds of movement before the next sensor measurement
 	SENSOR_ANGLES = {  # commonly-used sensor directions
 		'L': 300,  # default angle for sensing to the left
 		'R': 60    # default angle for sensing to the right
