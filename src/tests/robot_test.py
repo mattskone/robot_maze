@@ -13,13 +13,13 @@ class RobotTests(unittest.TestCase):
 	def setUp(self):
 		self.mock_sensor = MagicMock()
 		self.r = robot.Robot(driver_module='tests.gopigo_stub')
-		self.r.sensor = self.mock_sensor
+		self.r.distance_sensor = self.mock_sensor
 
 	def test_init(self):
 		"""Verify robot's attributes."""
 
 		self.assertEqual(self.r.state, None)
-		self.assertEqual(self.r.sensor, self.mock_sensor)
+		self.assertEqual(self.r.distance_sensor, self.mock_sensor)
 		self.assertEqual(self.r.speed, [0, 0])
 
 	def test_run(self):
@@ -35,12 +35,12 @@ class RobotTests(unittest.TestCase):
 		self.assertTrue(self.r.run())
 		mock_state.run.assert_called_once_with()
 
-	def test_sense(self):
-		"""Verify sense() is delegated to the sensor."""
+	def test_dist(self):
+		"""Verify dist() is delegated to the distance sensor."""
 
 		self.mock_sensor.sense.return_value = 50
-		self.assertEqual(self.r.sense(foo='bar'), 50)
-		self.mock_sensor.sense.assert_called_once_with(foo='bar')
+		self.assertEqual(self.r.dist(45), 50)
+		self.mock_sensor.sense.assert_called_once_with(45)
 
 	def test_stop(self):
 		"""Verify stop() is delegated to the driver."""

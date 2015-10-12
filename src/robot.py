@@ -38,7 +38,7 @@ class Robot(object):
 		"""
 
 		self.driver = import_module(driver_module)
-		self.sensor = None
+		self.distance_sensor = None
 		self.state = None
 
 		# Initialize motor components
@@ -60,16 +60,16 @@ class Robot(object):
 			raise AttributeError('State attribute not set on Robot.')
 		return self.state.run()
 
-	def sense(self, *args, **kwargs):
-		"""Take an return a sensor reading."""
+	def dist(self, angle=0):
+		"""Take an return a distance sensor reading in the direction given."""
 
-		if not self.sensor:
+		if not self.distance_sensor:
 			raise ValueError('no sensor configured')
 		
-		return self.sensor.sense(*args, **kwargs)
+		return self.distance_sensor.sense(angle)
 
 	def stop(self):
-		self.sensor.center()  # Because OCD is a thing
+		self.distance_sensor.center()  # Because OCD is a thing
 		self.driver.stop()
 
 	def fwd(self):

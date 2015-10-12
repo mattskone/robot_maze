@@ -22,7 +22,7 @@ def go():
 								error_fnc=sensor_error)
 	cs = state.CorridorState(robot=r)
 
-	r.sensor = s
+	r.distance_sensor = s
 	r.state = cs
 
 	try:

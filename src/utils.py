@@ -11,6 +11,16 @@ def robot_angle_to_mount_angle(robot_angle, mount_zero=90):
 		the commanded robot_angle.
 	"""
 
-	# Your code here
+	# Replace this naive code with a more robust algorithm:
+	if robot_angle == 0:
+		return 90
+	elif robot_angle == 90:
+		return 0
+	elif robot_angle == 110:
+		return 350
+	elif robot_angle == 225:
+		return 225
+	elif robot_angle == 315:
+		return 135
 
 	return None

@@ -51,11 +51,11 @@ class UltrasonicSensorTest(unittest.TestCase):
 										 pin=SENSOR_PIN,
 										 error_fnc=ultrasonic_sensor_error)
 
-	@patch('sensor.UltrasonicSensor.sense_swath')
-	def test_sense(self, mock_sense_swath):
-		mock_sense_swath.return_value = 50
-		self.assertEqual(self.s.sense(x=45), 50)
-		mock_sense_swath.assert_called_once_with(45)
+	@patch('sensor.UltrasonicSensor.sense_distance')
+	def test_sense(self, mock_sense_distance):
+		mock_sense_distance.return_value = 50
+		self.assertEqual(self.s.sense(45), 50)
+		mock_sense_distance.assert_called_once_with(45)
 
 	def test_sense_distance(self):
 		"""Verify actions to take a distance measurement."""

@@ -4,7 +4,7 @@ import unittest
 
 from mock import MagicMock
 
-from state import BaseState
+from state import BaseState, CorridorState
 
 
 class BaseStateTests(unittest.TestCase):
@@ -13,7 +13,6 @@ class BaseStateTests(unittest.TestCase):
 	def setUp(self):
 		self.mock_robot = MagicMock()
 		self.state = BaseState(self.mock_robot)
-		self.mock_callback = MagicMock()
 
 	def test_init(self):
 		self.assertEqual(self.state.robot, self.mock_robot)
@@ -22,11 +21,26 @@ class BaseStateTests(unittest.TestCase):
 	def test_run(self):
 		"""Verify that BaseState can't be used to run the robot."""
 		with self.assertRaises(NotImplementedError):
-			self.state.run(self.mock_callback)
+			self.state.run()
 
 
 class CorridorStateTests(unittest.TestCase):
 	"""Unit tests for the CorridorState class."""
 
-	def test_sense_initial_position(self):
-		pass
+	def setUp(self):
+		self.mock_robot = MagicMock()
+		self.state = CorridorState(self.mock_robot)
+
+	def test_find_perpendicular(self):
+		test_cases = [
+			([6, 7, 8, 7, 6, 5, 4, 3, 4, 5], 7),  # Right, looking right
+			([7, 6, 6, 6, 7, 8, 8, 7, 6, 5], 2),  # Right, looking left
+			([4, 5, 6, 7, 8, 7, 6, 6, 6, 7], 7),  # Left, looking right
+			([5, 4, 3, 3, 4, 5, 6, 6, 7, 6], 2),  # Left, looking left
+			([8, 7, 6, 5, 4, 3, 3, 4, 5, 6], 5),  # Looking straight at a wall
+			([3, 4, 5, 6, 7, 8, 8, 8, 7, 6], 9)   # Looking down the corridor
+		]
+
+		for test_case in test_cases:
+			self.assertEqual(self.state._find_perpendicular(test_case[0]),
+							 test_case[1])

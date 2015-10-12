@@ -45,7 +45,7 @@ class BaseSensor(object):
 class UltrasonicSensor(BaseSensor):
 
 	def sense(self, *args, **kwargs):
-		return self.sense_swath(kwargs['x'])
+		return self.sense_distance(args[0])
 
 	def sense_distance(self, angle):
 		"""Sense the distance at a given direction.
@@ -94,7 +94,7 @@ class UltrasonicSensor(BaseSensor):
 		left_limit = int(center) - int(width / 2)
 		right_limit = int(center) + int(width / 2)
 		interval = int(width / ((num_measurements - 1) or 1))
-		
+
 		for a in range(left_limit, right_limit + 1, interval):
 			try:
 				measurements.append(self.sense_distance(a % 360))
