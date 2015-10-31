@@ -11,7 +11,7 @@ class UtilsTest(unittest.TestCase):
 		test_cases = [
 			(0, 90),
 			(90, 0),
-			(100, 350),
+			(110, 340),
 			(225, 225),
 			(315, 135)
 		]
