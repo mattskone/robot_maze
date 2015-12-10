@@ -4,6 +4,8 @@ import time
 
 from matrix import matrix
 
+import numpy
+
 
 class BaseState(object):
 
@@ -22,6 +24,8 @@ class CorridorState(BaseState):
 	reference trajectory (centerline of the corridor).
 	"""
 
+	HEADINGS = [-90, -80, -70, -60, -50, -40, -30, -20, -10,
+				0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
 	MOVE_DURATION = 1  # seconds of movement before the next sensor measurement
 	SENSOR_ANGLES = {  # commonly-used sensor directions
 		'L': 300,  # default angle for sensing to the left
@@ -94,20 +98,47 @@ class CorridorState(BaseState):
 			# means perpendicular is the first (and last) measurement.
 			return 0
 
-	def _update_p_heading(self):
-		measurements = []
-		if min(self.p_heading) == max(self.p_heading):  # maximum confusion
-			for i in range(270, 450, 10):
-				measurements.append(self.robot.dist(i % 360))
-		else:
-			# TODO: use current p_heading to sense smaller arc
-			pass
+	# def _update_p_heading(self):
+	# 	measurements = []
+	# 	if min(self.p_heading) == max(self.p_heading):  # maximum confusion
+	# 		for i in range(270, 450, 10):
+	# 			measurements.append(self.robot.dist(i % 360))
+	# 	else:
+	# 		# TODO: use current p_heading to sense smaller arc
+	# 		pass
 
-		i = self._find_perpendicular(measurements)
-		return (270 + (i * 10)) % 360
+	# 	i = self._find_perpendicular(measurements)
+	# 	return (270 + (i * 10)) % 360
 
 	def _orient(self):
-		pass
+		self.robot.stop()
+		self.p_heading = self._find_p_heading()
+		self._turn_down_corridor()
+
+	def _find_p_heading(self):
+		"""Use a full sweep of sensor measurements to populate p_heading."""
+		angles = [a % 360 for a in range(270, 460, 10)]
+		measurements = []
+		for angle in angles:
+			measurements.append(self.robot.dist(angle))
+
+		index_of_perpendicular = self._find_perpendicular(measurements)
+
+		# TODO: expose azimuth error through the mount, and generate the
+		# error histogram from that.
+		p_heading = [0] * 18
+		p_heading[index_of_perpendicular] = 0.6
+		try:
+			p_heading[index_of_perpendicular + 1] = 0.2
+			p_heading[abs(index_of_perpendicular - 1)] = 0.2
+		except IndexError:
+			pass
+
+		return p_heading
+
+	def _turn_down_corridor(self):
+		turn_angle = numpy.random.choice(self.HEADINGS, p=self.p_heading)
+		self.robot.rotate(turn_angle)
 
 	def run(self, *args, **kwargs):
 		print 'Running CorridorState'
@@ -115,11 +146,8 @@ class CorridorState(BaseState):
 		# Ensure the robot is stopped
 		self.robot.stop()
 
-		# TODO: orient the robot, if is_oriented is False.
-		# Until then, assume the robot is centered and aligned on the corridor.
-		while not self.is_oriented:
+		if not self.is_oriented:
 			self.is_oriented = self._orient()
-			self.is_oriented = True  # HACKHACK
 
 		# Sense the cross-track error and width of the corridor:
 		last_cte, width = self._sense_initial_position()

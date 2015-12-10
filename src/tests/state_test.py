@@ -44,3 +44,29 @@ class CorridorStateTests(unittest.TestCase):
 		for test_case in test_cases:
 			self.assertEqual(self.state._find_perpendicular(test_case[0]),
 							 test_case[1])
+
+	def test_find_p_heading(self):
+		orig_find_perpendicular = self.state._find_perpendicular
+		self.state._find_perpendicular = MagicMock()
+
+		test_cases = [
+			(0, [0.6, 0.2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+			(11, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.2, 0.6, 0.2, 0, 0, 0, 0, 0])
+		]
+
+		for test_case in test_cases:
+			self.state._find_perpendicular.return_value = test_case[0]
+			self.assertEqual(self.state._find_p_heading(), test_case[1])
+
+	# def test_perpendicular_to_straight(self):
+	# 	test_cases = [
+	# 		(310, -50),
+	# 		(30, 30),
+	# 		(0, 0)
+	# 	]
+
+	# 	for test_case in test_cases:
+	# 		self.assertEqual(
+	# 			self.state._perpendicular_to_straight(test_case[0]),
+	# 			test_case[1]
+	# 		)
