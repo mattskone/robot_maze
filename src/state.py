@@ -103,7 +103,7 @@ class CorridorState(BaseState):
 		self.robot.stop()
 		self.p_heading = self._find_p_heading()
 		turn_angle = self._turn_down_corridor()
-		self._rotate_p_heading(turn_angle)
+		self.p_heading = self._rotate_p_heading(turn_angle)
 
 	def _find_p_heading(self):
 		"""Use a full sweep of sensor measurements to populate p_heading."""
@@ -125,11 +125,13 @@ class CorridorState(BaseState):
 		except IndexError:
 			pass
 
+		print p_heading
 		return p_heading
 
 	def _turn_down_corridor(self):
 		turn_angle = numpy.random.choice(self.DEGREES_FROM_STRAIGHT,
 										 p=self.p_heading)
+		print 'Rotating {0}'.format(turn_angle)
 		self.robot.rotate(turn_angle)
 
 		return turn_angle
