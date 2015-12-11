@@ -1,5 +1,6 @@
 """Implementations of the possible states for a robot."""
 
+import sys
 import time
 
 from matrix import matrix
@@ -24,8 +25,8 @@ class CorridorState(BaseState):
 	reference trajectory (centerline of the corridor).
 	"""
 
-	HEADINGS = [-90, -80, -70, -60, -50, -40, -30, -20, -10,
-				0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+	HEADINGS = [90, 80, 70, 60, 50, 40, 30, 20, 10, 0,
+				-10, -20, -30, -40, -50, -60, -70, -80, -90]
 	MOVE_DURATION = 1  # seconds of movement before the next sensor measurement
 	SENSOR_ANGLES = {  # commonly-used sensor directions
 		'L': 300,  # default angle for sensing to the left
@@ -126,7 +127,7 @@ class CorridorState(BaseState):
 
 		# TODO: expose azimuth error through the mount, and generate the
 		# error histogram from that.
-		p_heading = [0] * 18
+		p_heading = [0] * 19
 		p_heading[index_of_perpendicular] = 0.6
 		try:
 			p_heading[index_of_perpendicular + 1] = 0.2

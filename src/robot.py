@@ -89,9 +89,10 @@ class Robot(object):
 		self.driver.stop()
 		if degrees > 0:
 			self.driver.enc_tgt(1, 0, int(degrees / DEGREES_PER_TICK))
+			self.driver.right_rot()
 		else:
 			self.driver.enc_tgt(0, 1, abs(int(degrees / DEGREES_PER_TICK)))
-		self.driver.right_rot()
+			self.driver.left_rot()
 
 	def steer(self, steering_factor):
 		"""Adjust wheel speeds to adjust turning rate.
