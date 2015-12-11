@@ -48,11 +48,11 @@ class CorridorStateTests(unittest.TestCase):
 	def test_find_p_heading(self):
 		orig_find_perpendicular = self.state._find_perpendicular
 		self.state._find_perpendicular = MagicMock()
-		p_hist = [0.2, 0.6, 0.2]
+		heading_histogram = [0.2, 0.6, 0.2]
 
 		test_cases = [
-			(0, [0] * 8 + p_hist + [0] * 25),   # Centered at 270
-			(11, [0] * 19 + p_hist + [0] * 14)  # Centered at 020
+			(0, [0] * 17 + heading_histogram + [0] * 16),   # Centered at 270
+			(11, [0] * 10 + heading_histogram + [0] * 23)  # Centered at 020
 		]
 
 		for test_case in test_cases:
