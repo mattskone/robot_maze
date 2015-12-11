@@ -67,6 +67,15 @@ class UltrasonicSensorTest(unittest.TestCase):
 		self.assertEqual(self.s.sense_distance(60), expected_measurement)
 		self.mount.move.assert_called_once_with(x=60)
 
+	def test_sense_max_distance(self):
+		"""Verify that MAX_RANGE is respected."""
+
+		measurements = [682, 681, 682]
+		self.driver.us_dist.side_effect = lambda x: measurements.pop()
+		expected_measurement = int(ultrasonic_sensor_error(self.s.MAX_RANGE))
+
+		self.assertEqual(self.s.sense_distance(60), expected_measurement)
+
 	@patch('sensor.UltrasonicSensor.sense_distance')
 	def test_sense_swath(self, mock_sense_distance):
 		measurements = [101, 100, 102]
