@@ -26,6 +26,9 @@ def enc_tgt(*args):
 def right_rot():
 	calls.append('right_rot()')
 
+def left_rot():
+	calls.append('left_rot()')
+
 def trim_write(trim):
 	calls.append('trim_write({0})'.format(trim))
 

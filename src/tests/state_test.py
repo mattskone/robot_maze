@@ -48,25 +48,29 @@ class CorridorStateTests(unittest.TestCase):
 	def test_find_p_heading(self):
 		orig_find_perpendicular = self.state._find_perpendicular
 		self.state._find_perpendicular = MagicMock()
+		p_hist = [0.2, 0.6, 0.2]
 
 		test_cases = [
-			(0, [0.6, 0.2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-			(11, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.2, 0.6, 0.2, 0, 0, 0, 0, 0])
+			(0, [0] * 8 + p_hist + [0] * 25),   # Centered at 270
+			(11, [0] * 19 + p_hist + [0] * 14)  # Centered at 020
 		]
 
 		for test_case in test_cases:
 			self.state._find_perpendicular.return_value = test_case[0]
 			self.assertEqual(self.state._find_p_heading(), test_case[1])
 
-	# def test_perpendicular_to_straight(self):
-	# 	test_cases = [
-	# 		(310, -50),
-	# 		(30, 30),
-	# 		(0, 0)
-	# 	]
+		self.state._find_perpendicular = orig_find_perpendicular
 
-	# 	for test_case in test_cases:
-	# 		self.assertEqual(
-	# 			self.state._perpendicular_to_straight(test_case[0]),
-	# 			test_case[1]
-	# 		)
+	def test_rotate_p_heading(self):
+		p_histogram = [0.2, 0.6, 0.2]
+		self.state.p_heading = [0] * 17 + p_histogram + [0] * 16
+		test_cases = [
+			(30, [0] * 14 + p_histogram + [0] * 19),
+			(-30, [0] * 20 + p_histogram + [0] * 13)
+		]
+
+		for test_case in test_cases:
+			self.assertEqual(
+				self.state._rotate_p_heading(test_case[0]),
+				test_case[1]
+			)

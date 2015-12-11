@@ -25,8 +25,8 @@ class CorridorState(BaseState):
 	reference trajectory (centerline of the corridor).
 	"""
 
-	HEADINGS = [90, 80, 70, 60, 50, 40, 30, 20, 10, 0,
-				-10, -20, -30, -40, -50, -60, -70, -80, -90]
+	DEGREES_FROM_STRAIGHT = range(180, -180, -10)
+	RELATIVE_ANGLES = [d % 360 for d in range(270, 460, 10)]
 	MOVE_DURATION = 1  # seconds of movement before the next sensor measurement
 	SENSOR_ANGLES = {  # commonly-used sensor directions
 		'L': 300,  # default angle for sensing to the left
@@ -36,11 +36,11 @@ class CorridorState(BaseState):
 	TAU_D = 1.0
 
 	# Probability distribution for the direction of the corridor relative to
-	# the heading of the robot.  The distribution covers a 180-degree arc from
-	# left (270 degrees relative) to right (90 degrees relative) in 10-degree
-	# increments. Initialized as a uniform distribution (heading unknown).
-	# TODO: should P_HEADING be an attribute on the robot rather than on state?
-	p_heading = [1.0 / (180 / 10)] * (180 / 10)
+	# the heading of the robot.  The distribution covers a 360-degree arc in
+	# 10-degree increments. Initialized as a uniform distribution (heading
+	# unknown).
+	# TODO: should p_heading be an attribute on the robot rather than on state?
+	p_heading = [1.0 / (360 / 10)] * (360 / 10)
 
 	def _sense_initial_position(self):
 		"""Learn about this corridor and our place in it.
@@ -99,22 +99,11 @@ class CorridorState(BaseState):
 			# means perpendicular is the first (and last) measurement.
 			return 0
 
-	# def _update_p_heading(self):
-	# 	measurements = []
-	# 	if min(self.p_heading) == max(self.p_heading):  # maximum confusion
-	# 		for i in range(270, 450, 10):
-	# 			measurements.append(self.robot.dist(i % 360))
-	# 	else:
-	# 		# TODO: use current p_heading to sense smaller arc
-	# 		pass
-
-	# 	i = self._find_perpendicular(measurements)
-	# 	return (270 + (i * 10)) % 360
-
 	def _orient(self):
 		self.robot.stop()
 		self.p_heading = self._find_p_heading()
-		self._turn_down_corridor()
+		turn_angle = self._turn_down_corridor()
+		self._rotate_p_heading(turn_angle)
 
 	def _find_p_heading(self):
 		"""Use a full sweep of sensor measurements to populate p_heading."""
@@ -124,22 +113,42 @@ class CorridorState(BaseState):
 			measurements.append(self.robot.dist(angle))
 
 		index_of_perpendicular = self._find_perpendicular(measurements)
+		index_of_perpendicular += 9  # 180 deg measurements vs 360 deg headings
 
 		# TODO: expose azimuth error through the mount, and generate the
 		# error histogram from that.
-		p_heading = [0] * 19
+		p_heading = [0] * 36
 		p_heading[index_of_perpendicular] = 0.6
 		try:
 			p_heading[index_of_perpendicular + 1] = 0.2
-			p_heading[abs(index_of_perpendicular - 1)] = 0.2
+			p_heading[index_of_perpendicular - 1] = 0.2
 		except IndexError:
 			pass
 
 		return p_heading
 
 	def _turn_down_corridor(self):
-		turn_angle = numpy.random.choice(self.HEADINGS, p=self.p_heading)
+		turn_angle = numpy.random.choice(self.DEGREES_FROM_STRAIGHT,
+										 p=self.p_heading)
 		self.robot.rotate(turn_angle)
+
+		return turn_angle
+
+	def _rotate_p_heading(self, degrees=0):
+		"""Adjust the expected direction of the corridor after a turn.
+
+		Args:
+		degrees - the magnitude of the adjustment.  Adjust to the left for
+			positive values, and to the right for negative values.
+
+		Returns the new p_heading.
+		"""
+
+		steps = degrees / 10
+
+		return [
+			self.p_heading[(i + steps) % 36] for i in range(len(self.p_heading))
+		]
 
 	def run(self, *args, **kwargs):
 		print 'Running CorridorState'
@@ -149,6 +158,8 @@ class CorridorState(BaseState):
 
 		if not self.is_oriented:
 			self.is_oriented = self._orient()
+			print self.p_heading
+			sys.exit()
 
 		# Sense the cross-track error and width of the corridor:
 		last_cte, width = self._sense_initial_position()
