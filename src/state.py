@@ -113,15 +113,16 @@ class CorridorState(BaseState):
 			measurements.append(self.robot.dist(angle))
 
 		index_of_perpendicular = self._find_perpendicular(measurements)
-		index_of_perpendicular += 9  # 180 deg measurements vs 360 deg headings
+		index_of_corridor = (index_of_perpendicular + 9) % 18
+		index_of_corridor += 9  # 180 deg measurements vs 360 deg headings
 
 		# TODO: expose azimuth error through the mount, and generate the
 		# error histogram from that.
 		p_heading = [0] * 36
-		p_heading[index_of_perpendicular] = 0.6
+		p_heading[index_of_corridor] = 0.6
 		try:
-			p_heading[index_of_perpendicular + 1] = 0.2
-			p_heading[index_of_perpendicular - 1] = 0.2
+			p_heading[index_of_corridor + 1] = 0.2
+			p_heading[index_of_corridor - 1] = 0.2
 		except IndexError:
 			pass
 
