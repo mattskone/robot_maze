@@ -44,6 +44,8 @@ class BaseSensor(object):
 
 class UltrasonicSensor(BaseSensor):
 
+	MAX_RANGE = 300
+
 	def sense(self, *args, **kwargs):
 		return self.sense_distance(args[0])
 
@@ -67,9 +69,12 @@ class UltrasonicSensor(BaseSensor):
 		for i in range(3):
 			measurements.append(self.driver.us_dist(self.pin))
 
-		print 'Sensed {0} cm at angle {1}'.format(median(measurements), angle)
+		raw_measurement = min([median(measurements), self.MAX_RANGE])
+		measurement = int(self.error_fnc(raw_measurement))
 
-		return int(self.error_fnc(median(measurements)))
+		print 'Sensed {0} cm at angle {1}'.format(measurement, angle)
+
+		return measurement
 
 	def sense_swath(self, center=0, width=0, num_measurements=1,
 					return_all_measurements=False):
