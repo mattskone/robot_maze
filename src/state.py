@@ -25,7 +25,7 @@ class CorridorState(BaseState):
 	reference trajectory (centerline of the corridor).
 	"""
 
-	DEGREES_FROM_STRAIGHT = range(180, -180, -10)
+	DEGREES_FROM_STRAIGHT = range(-180, 180, 10)
 	RELATIVE_ANGLES = [d % 360 for d in range(270, 460, 10)]
 	MOVE_DURATION = 1  # seconds of movement before the next sensor measurement
 	SENSOR_ANGLES = {  # commonly-used sensor directions
