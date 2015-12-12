@@ -32,13 +32,16 @@ class CorridorStateTests(unittest.TestCase):
 		self.state = CorridorState(self.mock_robot)
 
 	def test_find_perpendicular(self):
+		"""Find not the minimum, but the center of the "dip"."""
 		test_cases = [
 			([6, 7, 8, 7, 6, 5, 4, 3, 4, 5], 7),  # Right, looking right
 			([7, 6, 6, 6, 7, 8, 8, 7, 6, 5], 2),  # Right, looking left
 			([4, 5, 6, 7, 8, 7, 6, 6, 6, 7], 7),  # Left, looking right
 			([5, 4, 3, 3, 4, 5, 6, 6, 7, 6], 2),  # Left, looking left
 			([8, 7, 6, 5, 4, 3, 3, 4, 5, 6], 5),  # Looking straight at a wall
-			([3, 4, 5, 6, 7, 8, 8, 8, 7, 6], 9)   # Looking down the corridor
+			([3, 4, 5, 6, 7, 8, 8, 8, 7, 6], 9),  # Looking down the corridor
+			([7, 7, 8, 8, 8, 8, 7, 6, 6, 6], 8),  # Looking right, flat at end
+			([6, 6, 6, 7, 8, 8, 8, 8, 7, 7], 1)   # Looking left, flat at start
 		]
 
 		for test_case in test_cases:

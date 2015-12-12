@@ -81,9 +81,9 @@ class CorridorState(BaseState):
 				if measurements[i - 1] < m or measurements[i + 1] < m:
 					continue  # we're on a slope, not a min
 				for j in range(1, len(measurements)):
-					if measurements[i - j] > m:
+					if (i - j == 0 ) or (measurements[i - j] > m):
 						left_bound = left_bound or i - j
-					if measurements[i + j] > m:
+					if (i + j == len(measurements)) or (measurements[i + j] > m):
 						right_bound = right_bound or i + j
 					if (left_bound is not None) and (right_bound is not None):
 						return left_bound + (right_bound - left_bound) / 2
