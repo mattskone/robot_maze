@@ -27,6 +27,7 @@ class CorridorState(BaseState):
 
 	DEGREES_FROM_STRAIGHT = range(-180, 180, 10)
 	RELATIVE_ANGLES = [d % 360 for d in range(270, 460, 10)]
+	WALL_DIRECTION = [0] * 9 + range(0, 100, 10) + range(280, 350, 10) + [0] * 9
 	MOVE_DURATION = 1  # seconds of movement before the next sensor measurement
 	SENSOR_ANGLES = {  # commonly-used sensor directions
 		'L': 300,  # default angle for sensing to the left
@@ -46,13 +47,13 @@ class CorridorState(BaseState):
 		"""Learn about this corridor and our place in it.
 
 		Returns a tuple (x, y), where:
-			x is the total width of the corridor in cm.
-			y is the displacement from the corridor center in cm.  Positive
+			x is the displacement from the corridor center in cm.  Positive
 				displacement indicates a position left of center.
+			y is the total width of the corridor in cm.
 		"""
 
-		right_dist = self.robot.sense(x=90)
-		left_dist = self.robot.sense(x=270)
+		right_dist = self.robot.dist(90)
+		left_dist = self.robot.dist(270)
 		width = right_dist + left_dist
 
 		return (width / 2.0 - left_dist, width)
@@ -100,10 +101,13 @@ class CorridorState(BaseState):
 			return 0
 
 	def _orient(self):
+		"""Turn the robot so it is facing down the corridor."""
 		self.robot.stop()
 		self.p_heading = self._find_p_heading()
 		turn_angle = self._turn_down_corridor()
 		self.p_heading = self._rotate_p_heading(turn_angle)
+
+		return True
 
 	def _find_p_heading(self):
 		"""Use a full sweep of sensor measurements to populate p_heading."""
@@ -151,6 +155,17 @@ class CorridorState(BaseState):
 			self.p_heading[(i + steps) % 36] for i in range(len(self.p_heading))
 		]
 
+	def _get_wall_direction(self, p_heading):
+		"""Find perpendicular to wall, relative to robot's heading.
+
+		Algorithm assumes that p_heading is in the forward hemisphere.
+		"""
+
+		index_heading = numpy.random.choice(range(len(p_heading)),
+										 	p=p_heading)
+
+		return self.WALL_DIRECTION[index_heading]
+
 	def run(self, *args, **kwargs):
 		print 'Running CorridorState'
 
@@ -159,18 +174,10 @@ class CorridorState(BaseState):
 
 		if not self.is_oriented:
 			self.is_oriented = self._orient()
-			print self.p_heading
-			sys.exit()
 
 		# Sense the cross-track error and width of the corridor:
 		last_cte, width = self._sense_initial_position()
 		print 'Corridor width: {0}'.format(width)
-		if last_cte > 0:
-			sensing_side = 'L'
-			opposite_side = 'R'
-		else:
-			sensing_side = 'R'
-			opposite_side = 'L'
 
 		# Start the robot
 		self.robot.fwd()
@@ -178,27 +185,29 @@ class CorridorState(BaseState):
 		while True:
 
 			# Sense current distance from side of corridor
-			dist = self.robot.sense(x=self.SENSOR_ANGLES[sensing_side])
+			wall_direction = self._get_wall_direction(self.p_heading)
+			print 'Wall direction: {0}'.format(wall_direction)
+			dist = self.robot.dist(wall_direction)
 
-			# Check for new state
+			# TODO: Check for new state in more robust way
 			if dist > width:
 				print 'End of corridor'
 				self.robot.stop()
 				break
 
 			# Compute new CTE
-			if sensing_side == 'R':
+			if wall_direction <= 90:
 				new_cte = dist - width / 2.0
 			else:
 				new_cte = width / 2.0 - dist
 
+			print 'Cross-track error: {0}'.format(new_cte)
+
 			# Adjust steering
 			steering_factor = -self.TAU_P * new_cte - self.TAU_D * (new_cte - last_cte)
+			print 'Steering factor: {0}'.format(steering_factor)
 			self.robot.steer(steering_factor)
 			last_cte = new_cte
 
 			# Pause for delay period:
 			time.sleep(self.MOVE_DURATION)
-
-			# Print debug data
-			print sensing_side, dist, last_cte, steering_factor
