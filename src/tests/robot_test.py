@@ -22,6 +22,24 @@ class RobotTests(unittest.TestCase):
 		self.assertEqual(self.r.distance_sensor, self.mock_sensor)
 		self.assertEqual(self.r.speed, [0, 0])
 
+	def test_degrees_turned(self):
+		"""Verify degrees turned is calculated correctly."""
+
+		def enc_read(motor):
+			if motor == 0:
+				return 150
+			else:
+				return 140
+
+		self.r.driver.enc_read = enc_read
+		self.r.left_encoder = 100
+		self.r.right_encoder = 95
+
+		expected_degrees = 25  # Net encoder ticks * 5 degrees per tick
+		self.assertEqual(self.r.degrees_turned, expected_degrees)
+		self.assertEqual(self.r.left_encoder, 150)
+		self.assertEqual(self.r.right_encoder, 140)
+
 	def test_run(self):
 		"""Verify run() is delegated to the robot's state."""
 
