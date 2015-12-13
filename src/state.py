@@ -27,7 +27,7 @@ class CorridorState(BaseState):
 
 	DEGREES_FROM_STRAIGHT = range(-180, 180, 10)
 	RELATIVE_ANGLES = [d % 360 for d in range(270, 460, 10)]
-	WALL_DIRECTION = [0] * 9 + range(0, 100, 10) + range(280, 350, 10) + [0] * 9
+	WALL_DIRECTION = [0] * 9 + range(0, 90, 10) + range(270, 350, 10) + [0] * 9
 	MOVE_DURATION = 1  # seconds of movement before the next sensor measurement
 	SENSOR_ANGLES = {  # commonly-used sensor directions
 		'L': 300,  # default angle for sensing to the left
