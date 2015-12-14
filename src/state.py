@@ -229,7 +229,7 @@ class CorridorState(BaseState):
 			# Check end of corridor
 			corridor_direction = self._get_corridor_direction(self.p_heading)
 			dist = self.robot.dist(corridor_direction)
-			if dist < width:
+			if dist < width / 2:
 				print 'End of corridor'
 				self.robot.stop()
 				break
@@ -241,7 +241,7 @@ class CorridorState(BaseState):
 				opposite_wall = 270
 
 			dist = self.robot.dist(opposite_wall)
-			if dist < width:
+			if dist > width:
 				print 'End of corridor'
 				self.robot.stop()
 				break
