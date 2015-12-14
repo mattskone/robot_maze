@@ -184,7 +184,7 @@ class CorridorState(BaseState):
 
 		while True:
 			# Adjust p_heading based on turn
-			turn_degrees = self.robot.degrees_turned()
+			turn_degrees = self.robot.degrees_turned
 			print 'Degrees turned: {0}'.format(turn_degrees)
 			self.p_heading = self._rotate_p_heading(turn_degrees)
 
