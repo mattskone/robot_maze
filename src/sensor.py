@@ -70,11 +70,6 @@ class UltrasonicSensor(BaseSensor):
 			measurements.append(self.driver.us_dist(self.pin))
 
 		raw_measurement = min([median(measurements), self.MAX_RANGE])
-		if raw_measurement == self.MAX_RANGE:
-			for i in range(3):
-				measurements.append(self.driver.us_dist(self.pin))
-
-			raw_measurement = min([median(measurements), self.MAX_RANGE])
 		measurement = int(self.error_fnc(raw_measurement))
 
 		print 'Sensed {0} cm at angle {1}'.format(measurement, angle)
