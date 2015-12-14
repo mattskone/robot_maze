@@ -7,6 +7,7 @@ import mount
 import sensor
 
 
+MIN_VOLTAGE = 7.0		# Minimum allowable voltage for consistent behavior
 MOTOR_LEFT = 0			# Index of the left motor
 MOTOR_RIGHT = 1			# Index of the right motor
 TRIM_STRAIGHT = -10		# Trim setting for straight movement
@@ -15,6 +16,10 @@ TURN_SPEED = 10			# Added speed for the outside wheel when turning
 MAX_TURN_RATIO = 1.2	# Max ratio of outside wheel to inside wheel speeds
 ROTATING_DEGREES_PER_TICK = 10	# Degrees of robot rotation in one encoder tick
 TURNING_DEGREES_PER_TICK = 5	# Degrees of robot turn in one encoder tick
+
+
+class LowVoltageError(Exception):
+	pass
 
 
 class Robot(object):
@@ -42,6 +47,10 @@ class Robot(object):
 		self.distance_sensor = None
 		self.state = None
 
+		volt = self.volt
+		if volt < MIN_VOLTAGE:
+			raise LowVoltageError('{0}V is below min voltage'.format(volt))
+
 		# Initialize motor components
 		self.driver.stop()
 		self.speed = [0, 0]  # [left, right motor]
@@ -62,6 +71,12 @@ class Robot(object):
 			# TODO: make the robot determine its state before proceding
 			raise AttributeError('State attribute not set on Robot.')
 		return self.state.run()
+
+	@property
+	def volt(self):
+		"""Return the current battery voltage."""
+
+		return self.driver.volt()
 
 	@property
 	def degrees_turned(self):
@@ -104,12 +119,12 @@ class Robot(object):
 
 		Args:
 		degrees - the number of degrees to rotate (-360 to 360).  Positive
-			degrees command a right-hand rotation, and negative degrees command
-			a left-hand rotation.
+			degrees command a left-hand rotation, and negative degrees command
+			a right-hand rotation.
 		"""
 
 		self.driver.stop()
-		if degrees > 0:
+		if degrees < 0:
 			self.driver.enc_tgt(1, 0, int(degrees / ROTATING_DEGREES_PER_TICK))
 			self.driver.right_rot()
 		else:

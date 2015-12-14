@@ -47,8 +47,8 @@ class SwivelMount(object):
 		self.clockwise_servo = clockwise_servo
 		self.max_right = center + (arc / 2) % 360
 		self.max_left = 360 - abs(center - (arc / 2))
-
 		self.current_angle = center
+
 		self.center()
 
 	def _mount_angle_to_servo_angle(self, angle):
@@ -75,14 +75,16 @@ class SwivelMount(object):
 		if y:
 			raise ValueError('vertical angle not supported on SwivelMount')
 
-		x = self._mount_angle_to_servo_angle(x)
-		self.driver.servo(x)
+		x_prime = self._mount_angle_to_servo_angle(x)
+		self.driver.servo(x_prime)
 
 		# Allow sufficient time to complete the movement before returning:
 		delay_times = [0.2, 0.4, 0.6, 0.8]  # 0.2 secs per 90 degrees of travel
 		time.sleep(delay_times[abs(self.current_angle - x) / 90])
+		self.current_angle = x
 
 	def center(self):
 		"""Center the mount."""
 
 		self.move(x=self.mount_center)
+		self.current_angle = self.mount_center

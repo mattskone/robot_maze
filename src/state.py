@@ -25,9 +25,9 @@ class CorridorState(BaseState):
 	reference trajectory (centerline of the corridor).
 	"""
 
-	DEGREES_FROM_STRAIGHT = range(-180, 180, 10)
-	RELATIVE_ANGLES = [d % 360 for d in range(270, 460, 10)]
-	WALL_DIRECTION = [0] * 9 + range(0, 90, 10) + range(270, 350, 10) + [0] * 9
+	DEGREES_FROM_STRAIGHT = range(180, -180, -10)
+	RELATIVE_ANGLES = [d % 360 for d in range(180, 540, 10)]
+	WALL_DIRECTION = [0] * 9 + range(0, 90, 10) + range(270, 360, 10) + [0] * 8
 	MOVE_DURATION = 1  # seconds of movement before the next sensor measurement
 	SENSOR_ANGLES = {  # commonly-used sensor directions
 		'L': 300,  # default angle for sensing to the left
@@ -168,6 +168,14 @@ class CorridorState(BaseState):
 
 		return self.WALL_DIRECTION[index_heading]
 
+	def _get_corridor_direction(self, p_heading):
+		"""Find direction corresponding to straight down the corridor."""
+
+		index_heading = numpy.random.choice(range(len(p_heading)),
+											p=p_heading)
+
+		return self.RELATIVE_ANGLES[index_heading]
+
 	def run(self, *args, **kwargs):
 		print 'Running CorridorState'
 
@@ -186,7 +194,7 @@ class CorridorState(BaseState):
 
 		while True:
 			# Adjust p_heading based on turn
-			turn_degrees = self.robot.degrees_turned()
+			turn_degrees = self.robot.degrees_turned
 			print 'Degrees turned: {0}'.format(turn_degrees)
 			self.p_heading = self._rotate_p_heading(turn_degrees)
 
@@ -216,4 +224,24 @@ class CorridorState(BaseState):
 			last_cte = new_cte
 
 			# Pause for delay period:
-			time.sleep(self.MOVE_DURATION)
+			# time.sleep(self.MOVE_DURATION)
+
+			# Check end of corridor
+			corridor_direction = self._get_corridor_direction(self.p_heading)
+			dist = self.robot.dist(corridor_direction)
+			if dist < width:
+				print 'End of corridor'
+				self.robot.stop()
+				break
+
+			opposite_wall = (wall_direction + 180) % 360
+			if 90 < opposite_wall <= 180:
+				opposite_wall = 90
+			elif 180 < opposite_wall <=270:
+				opposite_wall = 270
+
+			dist = self.robot.dist(opposite_wall)
+			if dist < width:
+				print 'End of corridor'
+				self.robot.stop()
+				break

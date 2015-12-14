@@ -35,3 +35,7 @@ def trim_write(trim):
 def us_dist(pin):
 	calls.append('us_dist({0})'.format(pin))
 	return 600  # approximate max range
+
+def volt():
+	calls.append('volt()')
+	return 10.0

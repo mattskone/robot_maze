@@ -25,9 +25,10 @@ def go():
 	r.distance_sensor = s
 	r.state = cs
 
+	print 'Voltage: {0}'.format(r.volt)
+	print 'Starting in 3 seconds...'
+	time.sleep(3)
 	try:
-		print 'Starting in 5 seconds...'
-		time.sleep(5)
 		r.run()
 	except KeyboardInterrupt:
 		r.stop()

@@ -22,6 +22,15 @@ class RobotTests(unittest.TestCase):
 		self.assertEqual(self.r.distance_sensor, self.mock_sensor)
 		self.assertEqual(self.r.speed, [0, 0])
 
+	def test_volt(self):
+		"""Verify volt() returns current battery voltage."""
+
+		TEST_VOLTAGE = 9.5
+		self.r.driver.volt = MagicMock()
+		self.r.driver.volt.return_value = TEST_VOLTAGE
+
+		self.assertEqual(self.r.volt, TEST_VOLTAGE)
+
 	def test_degrees_turned(self):
 		"""Verify degrees turned is calculated correctly."""
 
@@ -81,14 +90,14 @@ class RobotTests(unittest.TestCase):
 		"""Verify rotate() is executed correctly."""
 
 		expected_calls = ['stop()',
-						  'enc_tgt(1, 0, 18)',
-						  'right_rot()']
+						  'enc_tgt(0, 1, 18)',
+						  'left_rot()']
 		self.r.rotate(degrees=180)
 		self.assertEqual(self.r.driver.calls[-3:], expected_calls)
 
 		expected_calls = ['stop()',
-						  'enc_tgt(0, 1, 9)',
-						  'left_rot()']
+						  'enc_tgt(1, 0, -9)',
+						  'right_rot()']
 		self.r.rotate(degrees=-90)
 		self.assertEqual(self.r.driver.calls[-3:], expected_calls)
 

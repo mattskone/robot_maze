@@ -91,3 +91,17 @@ class CorridorStateTests(unittest.TestCase):
 				wall_direction in test_case[1],
 				'{0} not in {1}'.format(wall_direction, test_case[1])
 			)
+
+	def test_get_corridor_direction(self):
+		p_histogram = [0.2, 0.6, 0.2]
+		test_cases = [
+			([0] * 18 + p_histogram + [0] * 15, [0, 10, 20]),
+			([0] * 9 + p_histogram + [0] * 24, [270, 280, 290])
+		]
+
+		for test_case in test_cases:
+			corridor_direction = self.state._get_corridor_direction(test_case[0])
+			self.assertTrue(
+				corridor_direction in test_case[1],
+				'{0} not in {1}'.format(corridor_direction, test_case[1])
+			)
