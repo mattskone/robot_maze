@@ -78,6 +78,7 @@ class MountTest(unittest.TestCase):
 		"""Verify driver is called correctly to swivel the mount."""
 		self.m.move(90)
 		self.mock_driver.servo.assert_called_once_with(0)
+		self.assertEqual(self.m.current_angle, 90)
 
 	def test_swivel_invalid_angles(self):
 		"""Verify exception thrown if invalid angle specified."""
@@ -90,3 +91,4 @@ class MountTest(unittest.TestCase):
 	def test_center(self, mock_move):
 		self.m.center()
 		mock_move.assert_called_once_with(x=0)
+		self.assertEqual(self.m.current_angle, 0)
