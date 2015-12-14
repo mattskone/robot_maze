@@ -90,14 +90,14 @@ class RobotTests(unittest.TestCase):
 		"""Verify rotate() is executed correctly."""
 
 		expected_calls = ['stop()',
-						  'enc_tgt(1, 0, 18)',
-						  'right_rot()']
+						  'enc_tgt(0, 1, 18)',
+						  'left_rot()']
 		self.r.rotate(degrees=180)
 		self.assertEqual(self.r.driver.calls[-3:], expected_calls)
 
 		expected_calls = ['stop()',
-						  'enc_tgt(0, 1, 9)',
-						  'left_rot()']
+						  'enc_tgt(1, 0, -9)',
+						  'right_rot()']
 		self.r.rotate(degrees=-90)
 		self.assertEqual(self.r.driver.calls[-3:], expected_calls)
 
