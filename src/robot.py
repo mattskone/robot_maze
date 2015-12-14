@@ -119,12 +119,12 @@ class Robot(object):
 
 		Args:
 		degrees - the number of degrees to rotate (-360 to 360).  Positive
-			degrees command a right-hand rotation, and negative degrees command
-			a left-hand rotation.
+			degrees command a left-hand rotation, and negative degrees command
+			a right-hand rotation.
 		"""
 
 		self.driver.stop()
-		if degrees > 0:
+		if degrees < 0:
 			self.driver.enc_tgt(1, 0, int(degrees / ROTATING_DEGREES_PER_TICK))
 			self.driver.right_rot()
 		else:
