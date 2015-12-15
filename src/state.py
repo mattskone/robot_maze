@@ -29,10 +29,6 @@ class CorridorState(BaseState):
 	RELATIVE_ANGLES = [d % 360 for d in range(180, 540, 10)]
 	WALL_DIRECTION = [0] * 9 + range(0, 90, 10) + range(270, 360, 10) + [0] * 8
 	MOVE_DURATION = 1  # seconds of movement before the next sensor measurement
-	SENSOR_ANGLES = {  # commonly-used sensor directions
-		'L': 300,  # default angle for sensing to the left
-		'R': 60    # default angle for sensing to the right
-	}
 	TAU_P = 0.2
 	TAU_D = 1.0
 
@@ -154,7 +150,7 @@ class CorridorState(BaseState):
 		steps = degrees / 10
 
 		return [
-			self.p_heading[(i + steps) % 36] for i in range(len(self.p_heading))
+			self.p_heading[(i - steps) % 36] for i in range(len(self.p_heading))
 		]
 
 	def _get_wall_direction(self, p_heading):
@@ -163,18 +159,18 @@ class CorridorState(BaseState):
 		Algorithm assumes that p_heading is in the forward hemisphere.
 		"""
 
-		index_heading = numpy.random.choice(range(len(p_heading)),
+		heading_index = numpy.random.choice(range(len(p_heading)),
 										 	p=p_heading)
 
-		return self.WALL_DIRECTION[index_heading]
+		return self.WALL_DIRECTION[heading_index]
 
 	def _get_corridor_direction(self, p_heading):
 		"""Find direction corresponding to straight down the corridor."""
 
-		index_heading = numpy.random.choice(range(len(p_heading)),
+		heading_index = numpy.random.choice(range(len(p_heading)),
 											p=p_heading)
 
-		return self.RELATIVE_ANGLES[index_heading]
+		return self.RELATIVE_ANGLES[heading_index]
 
 	def run(self, *args, **kwargs):
 		print 'Running CorridorState'
@@ -222,9 +218,6 @@ class CorridorState(BaseState):
 			print 'Steering factor: {0}'.format(steering_factor)
 			self.robot.steer(steering_factor)
 			last_cte = new_cte
-
-			# Pause for delay period:
-			# time.sleep(self.MOVE_DURATION)
 
 			# Check end of corridor
 			corridor_direction = self._get_corridor_direction(self.p_heading)

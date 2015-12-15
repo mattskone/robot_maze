@@ -68,8 +68,8 @@ class CorridorStateTests(unittest.TestCase):
 		p_histogram = [0.2, 0.6, 0.2]
 		self.state.p_heading = [0] * 17 + p_histogram + [0] * 16
 		test_cases = [
-			(30, [0] * 14 + p_histogram + [0] * 19),
-			(-30, [0] * 20 + p_histogram + [0] * 13)
+			(-30, [0] * 14 + p_histogram + [0] * 19),
+			(30, [0] * 20 + p_histogram + [0] * 13)
 		]
 
 		for test_case in test_cases:
