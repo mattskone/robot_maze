@@ -119,10 +119,10 @@ class CorridorState(BaseState):
 		# TODO: expose azimuth error through the mount, and generate the
 		# error histogram from that.
 		p_heading = [0] * 36
-		p_heading[index_of_corridor] = 0.6
+		p_heading[index_of_corridor] = 0.8
 		try:
-			p_heading[index_of_corridor + 1] = 0.2
-			p_heading[index_of_corridor - 1] = 0.2
+			p_heading[index_of_corridor + 1] = 0.1
+			p_heading[index_of_corridor - 1] = 0.1
 		except IndexError:
 			pass
 

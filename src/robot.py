@@ -11,7 +11,7 @@ MIN_VOLTAGE = 7.0		# Minimum allowable voltage for consistent behavior
 MOTOR_LEFT = 0			# Index of the left motor
 MOTOR_RIGHT = 1			# Index of the right motor
 TRIM_STRAIGHT = -10		# Trim setting for straight movement
-DEFAULT_SPEED = 80  	# Slowest speed without stall (60/120 for batt/cable)
+DEFAULT_SPEED = 70  	# Slowest speed without stall (60/120 for batt/cable)
 TURN_SPEED = 10			# Added speed for the outside wheel when turning
 MAX_TURN_RATIO = 1.2	# Max ratio of outside wheel to inside wheel speeds
 ROTATING_DEGREES_PER_TICK = 10	# Degrees of robot rotation in one encoder tick
@@ -125,10 +125,10 @@ class Robot(object):
 
 		self.driver.stop()
 		if degrees < 0:
-			self.driver.enc_tgt(1, 0, int(degrees / ROTATING_DEGREES_PER_TICK))
+			self.driver.enc_tgt(1, 0, abs(int(degrees / ROTATING_DEGREES_PER_TICK)))
 			self.driver.right_rot()
 		else:
-			self.driver.enc_tgt(0, 1, abs(int(degrees / ROTATING_DEGREES_PER_TICK)))
+			self.driver.enc_tgt(0, 1, int(degrees / ROTATING_DEGREES_PER_TICK))
 			self.driver.left_rot()
 
 	def steer(self, steering_factor):
