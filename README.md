@@ -35,6 +35,8 @@ I selected it for the following qualities:
  1. (Relatively) inexpensive at $199.
  1. Easy to assemble.
 
+NOTE: I moved the range sensor from its position at the front of the robot (shown in the stock photo above) to directly over the axis of the drive wheels.  This helped ensure consistent distance measurements before and after a turning or rotating motion.
+
 ### Usage
 
  1. Begin a terminal session on the GoPiGo from another machine on the network.  SSH works fine, but you may also use VNC to view the GoPiGo's desktop and begin a terminal session from there.
