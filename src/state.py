@@ -199,9 +199,7 @@ class CorridorState(BaseState):
 			print 'Wall direction: {0}'.format(wall_direction)
 			dist = self.robot.dist(wall_direction)
 
-			# TODO: Check for new state in more robust way
 			if dist > width:
-				print 'End of corridor'
 				self.robot.stop()
 				break
 
@@ -223,18 +221,21 @@ class CorridorState(BaseState):
 			corridor_direction = self._get_corridor_direction(self.p_heading)
 			dist = self.robot.dist(corridor_direction)
 			if dist < width / 2:
-				print 'End of corridor'
 				self.robot.stop()
 				break
 
+			# Check if corridor turns
 			opposite_wall = (wall_direction + 180) % 360
-			if 90 < opposite_wall <= 180:
-				opposite_wall = 90
-			elif 180 < opposite_wall <=270:
-				opposite_wall = 270
-
-			dist = self.robot.dist(opposite_wall)
+			try:
+				dist = self.robot.dist(opposite_wall)
+			except ValueError:
+				m = self.robot.distance_sensor.mount
+				if opposite_wall < 180:
+					dist = self.robot.dist(m.max_right)
+				else:
+					dist = self.robot.dist(m.max_left)
 			if dist > width:
-				print 'End of corridor'
 				self.robot.stop()
 				break
+
+		print 'End of corridor'
